@@ -86,8 +86,8 @@ class Menu(object):
         for item in self.items:
             if item.is_selected:
                 item.unselect()
-            self.items[index].select()
-            self.load()
+        self.items[index].select()
+        self.load()
 
     def load(self):
         self.surface.fill((0,0,0))
@@ -116,7 +116,7 @@ class Menu(object):
         for index, item in enumerate(self.items):
             if item.is_selected :
                 return index
-            break
+                break
 
     def menu_next(self):
         """Select the next menu item in the list."""
