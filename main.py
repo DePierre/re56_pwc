@@ -10,7 +10,7 @@ from constants import *
 
 pygame.init()
 
-# Declare a variable window and create a new window of 800x800 this window is
+# Declare a variable window and create a new window of 1220x720 this window is
 # not sizable.
 window = pygame.display.set_mode((MAIN_WINDOW_WIDTH, MAIN_WINDOW_HEIGHT))
 
