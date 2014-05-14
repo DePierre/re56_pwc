@@ -41,6 +41,9 @@ GRID_WIDTH = GRID_HEIGHT
 CELL_HEIGHT = 20  # Pixels.
 CELL_WIDTH = 20  # Pixels.
 
+# Maximum number of devices
+MAX_DEVICS = 100
+
 # Antenna location
 ANTENNA_LOC_HEIGHT = GRID_HEIGHT / 2 - CELL_HEIGHT
 ANTENNA_LOC_WIDTH = GRID_WIDTH / 2 - CELL_WIDTH
