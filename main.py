@@ -30,11 +30,12 @@ antenna = Device(
 background.blit(antenna.current_picture, (antenna.abscisse, antenna.ordonnee))
 #declare a copy of bakground which will be used to update the screen
 tmp_background = background
-# Initialize the menu and select the first menu item.
-menu = Menu()
 
 # List of devices which is used to manage connection and display
 device_list = [ antenna ]
+
+# Initialize the menu and select the first menu item.
+menu = Menu(device_list)
 
 # Waiting loop.
 while not stop:
