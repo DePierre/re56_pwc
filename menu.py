@@ -57,7 +57,6 @@ class Menu_Item(object):
             self.picture = pygame.image.load(PicturePath_unsel).convert_alpha()
 
 
-
 class Menu(object):
     items = [
         Menu_Item(
@@ -77,9 +76,8 @@ class Menu(object):
     surface = pygame.image.load(
         PICTURE_PATH + RIGHT_PANEL_IMAGE).convert_alpha()
 
-    def __init__(self)	:
+    def __init__(self):
         self.select_menu(MENU1_INDEX)
-
 
     def select_menu(self, index):
         """Place the arrow selector beside the menu item indexed 'index'."""
@@ -115,7 +113,6 @@ class Menu(object):
         for index, item in enumerate(self.items):
             if item.is_selected :
                 return index
-                break
 
     def menu_next(self):
         """Select the next menu item in the list."""
