@@ -87,9 +87,10 @@ class Menu(object):
             if item.is_selected:
                 item.unselect()
         self.items[index].select()
-        self.load()
+        self.refresh()
 
-    def load(self):
+    def refresh(self):
+        """Reload each image of menu."""
         self.surface.fill((0,0,0))
         self.surface = pygame.image.load(
             PICTURE_PATH + RIGHT_PANEL_IMAGE).convert_alpha()

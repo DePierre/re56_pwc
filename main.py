@@ -28,10 +28,12 @@ antenna = Device(
     (ANTENNA_LOC_WIDTH,ANTENNA_LOC_HEIGHT),
     PICTURE_PATH + ANTENNA_IMAGE)
 background.blit(antenna.current_picture, (antenna.abscisse, antenna.ordonnee))
+#declare a copy of bakground which will be used to update the screen
+tmp_background = background
 # Initialize the menu and select the first menu item.
 menu = Menu()
 
-# List of device which is used to manage connection and display
+# List of devices which is used to manage connection and display
 device_list = [ antenna ]
 
 # Waiting loop.
@@ -52,10 +54,13 @@ while not stop:
                 # grid.
                 print "Feature not implemented yet. Sorry."
     # Reload window
+    tmp_background = background # Reset tmp_background to initial background
+    for device in device_list:
+        tmp_background.blit(device.current_picture,
+                            (device.abscisse, device.ordonnee))
     window.fill((0,0,0))
-    window.blit(background, (0,0))
+    window.blit(tmp_background, (0,0))
     window.blit(menu.surface, (GRID_WIDTH,0))
 
     # Refresh
     pygame.display.flip()
-    # TODO: Implement generation of each distribution from list of devices.
