@@ -5,10 +5,13 @@ from pygame.locals import *
 
 from constants import *
 
+from math import *
+
 
 class Device:
         abscisse = 0
         ordonnee = 0
+        distance_from_antenna = 0.0
         current_emitted_power = 0.0
         current_command = COMMAND_UP
         connexion_status = NOT_CONNECTED
@@ -24,7 +27,25 @@ class Device:
             self.connexion_status = NOT_CONNECTED
             self.current_picture = pygame.image.load(
                 PicturePath).convert_alpha()
-
+        
+        def compute_distance_from_antenna(self):
+            """Compute the distance between the mobile device and the antenna
+            using coordinates of the UE and the antenna as it is defined in
+            constants.py.
+            
+            match between pixels and meters is defined by PIX_IN_METERS in
+            constants.py.
+            
+            Any distance computation is down considering only the left bottom
+            corner of both device and antenna which corresponds to the direct
+            coordinate of them.
+            """
+            distance_x = abs(ANTENNA_LOC_WIDTH - self.abscisse)
+            distance_y = abs(ANTENNA_LOC_HEIGHT - self.ordonnee)
+            return sqrt(pow(distance_x,2) + pow(distance_y,2))
+            
+            
+            
         def set_command_up(self):
             """Set the current_command of the device to COMMAND_UP.
 

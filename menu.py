@@ -61,15 +61,15 @@ class Menu_Item(object):
 class Menu(object):
     items = [
         Menu_Item(
-            (770, 570),
+            (50, 570),
             PICTURE_PATH + MENU_SELECTION1_IMAGE,
             PICTURE_PATH + MENU_SELECTION1_SELECTED_IMAGE),
         Menu_Item(
-            (770, 620),
+            (50, 620),
             PICTURE_PATH + MENU_SELECTION2_IMAGE,
             PICTURE_PATH + MENU_SELECTION2_SELECTED_IMAGE),
         Menu_Item(
-            (770, 670),
+            (50, 670),
             PICTURE_PATH + MENU_SELECTION3_IMAGE,
             PICTURE_PATH + MENU_SELECTION3_SELECTED_IMAGE)]
     arrow_selector = pygame.image.load(
@@ -97,15 +97,14 @@ class Menu(object):
         for item in self.items:
             self.surface.blit(
                 item.picture,
-                (item.abscisse - 720, item.ordonnee))
+                (item.abscisse, item.ordonnee))
         # Load image of arrow selector beside the menu item selected.
         for item in self.items:
             if item.is_selected:
                 self.surface.blit(
                     self.arrow_selector, (
                         item.abscisse +
-                        ARROW_SELECTOR_WIDTH_OFFSET_FROM_MENU_ITEM -
-                        720,
+                        ARROW_SELECTOR_WIDTH_OFFSET_FROM_MENU_ITEM,
                         item.ordonnee +
                         ARROW_SELECTOR_HEIGHT_OFFSET_FROM_MENU_ITEM
                     ))

@@ -28,6 +28,10 @@ DEVICE_TRY_TO_CONNECT_UP_IMAGE = "try_up.png"
 DEVICE_TRY_TO_CONNECT_DOWN_IMAGE = "try_down.png"
 DEVICE_DISCONNECTED_IMAGE = "disconnected.png"
 
+# For every constant defined hereafter 1 pixel unit will correspond to the
+# following value in meter
+PIX_IN_METERS = 100
+
 # Size in pixels of the main window.
 MAIN_WINDOW_HEIGHT = 720  # Max which could be used: 1366 x 768 screen (16:9).
 MAIN_WINDOW_WIDTH = 1220
@@ -36,6 +40,10 @@ GRID_WIDTH = GRID_HEIGHT
 
 CELL_HEIGHT = 20  # Pixels.
 CELL_WIDTH = 20  # Pixels.
+
+# Antenna location
+ANTENNA_LOC_HEIGHT = GRID_HEIGHT / 2 - CELL_HEIGHT
+ANTENNA_LOC_WIDTH = GRID_WIDTH / 2 - CELL_WIDTH
 
 # Offset of the arrow_selector from menu item (width, height).
 ARROW_SELECTOR_WIDTH_OFFSET_FROM_MENU_ITEM = 150  # Pixels.

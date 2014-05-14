@@ -22,15 +22,17 @@ from menu import *
 stop = False
 
 # Initialize background image.
-background = pygame.image.load(PICTURE_PATH + BACKGROUND_IMAGE).convert_alpha()
+background = pygame.image.load(PICTURE_PATH + BACKGROUND_SCALED_IMAGE).convert_alpha()
 # Place antenna at the very center.
 antenna = Device(
-    (GRID_WIDTH / 2 - CELL_WIDTH,GRID_HEIGHT / 2 - CELL_HEIGHT),
+    (ANTENNA_LOC_WIDTH,ANTENNA_LOC_HEIGHT),
     PICTURE_PATH + ANTENNA_IMAGE)
 background.blit(antenna.current_picture, (antenna.abscisse, antenna.ordonnee))
 # Initialize the menu and select the first menu item.
 menu = Menu()
 
+# List of device which is used to manage connection and display
+device_list = [ antenna ]
 
 # Waiting loop.
 while not stop:
