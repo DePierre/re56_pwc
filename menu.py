@@ -114,12 +114,55 @@ class Menu(object):
             self.random_distribution()
 
     def close_distribution(self):
-        pass
+        """Create MAX_DEVICES devices close to the antenna on the grid."""
+        MAX_DISTANCE = 200
+        while len(devices) < MAX_DEVICES + 1:
+            # Randomly generate the (x, y) coordinates of the new device.
+            x_coor = random.randint(0, GRID_HEIGHT)
+            x_coor -= x_coor % CELL_HEIGHT
+            y_coor = random.randint(0, GRID_HEIGHT)
+            y_coor -= y_coor % CELL_WIDTH
+            # A mobile device cannot be onto the antenna
+            if (x_coor == devices[0].abscisse and
+                    y_coor == devices[0].ordonnee):
+                continue
+            # Circle: (x - a)^2 + (y - b)^2 = r^2
+            if ((x_coor - devices[0].abscisse) ** 2 +
+                    (y_coor - devices[0].ordonnee) ** 2 > MAX_DISTANCE ** 2):
+                continue
+            # Create the new device
+            new_device = Device(
+                (x_coor, y_coor),
+                PICTURE_PATH + DEVICE_TRY_TO_CONNECT_UP_IMAGE)
+            # Add the new device to the list of devices
+            devices.append(new_device)
 
     def far_distribution(self):
-        pass
+        """Create MAX_DEVICES devices far from the antenna on the grid."""
+        MIN_DISTANCE = 200
+        while len(devices) < MAX_DEVICES + 1:
+            # Randomly generate the (x, y) coordinates of the new device.
+            x_coor = random.randint(0, GRID_HEIGHT)
+            x_coor -= x_coor % CELL_HEIGHT
+            y_coor = random.randint(0, GRID_HEIGHT)
+            y_coor -= y_coor % CELL_WIDTH
+            # A mobile device cannot be onto the antenna
+            if (x_coor == devices[0].abscisse and
+                    y_coor == devices[0].ordonnee):
+                continue
+            # Circle: (x - a)^2 + (y - b)^2 = r^2
+            if ((x_coor - devices[0].abscisse) ** 2 +
+                    (y_coor - devices[0].ordonnee) ** 2 < MIN_DISTANCE ** 2):
+                continue
+            # Create the new device
+            new_device = Device(
+                (x_coor, y_coor),
+                PICTURE_PATH + DEVICE_TRY_TO_CONNECT_UP_IMAGE)
+            # Add the new device to the list of devices
+            devices.append(new_device)
 
     def random_distribution(self):
+        """Create MAX_DEVICES devices randomly on the grid."""
         while len(devices) < MAX_DEVICES + 1:
             # Randomly generate the (x, y) coordinates of the new device.
             x_coor = random.randint(0, GRID_HEIGHT)
