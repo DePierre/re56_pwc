@@ -22,6 +22,7 @@ class Device:
         def __init__(self, (x, y), PicturePath):
             self.abscisse = x
             self.ordonnee = y
+            self.distance_from_antenna = self.compute_distance_from_antenna()
             self.current_emitted_power = 0.0
             self.current_command = COMMAND_UP
             self.connexion_status = NOT_CONNECTED
