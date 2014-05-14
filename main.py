@@ -28,11 +28,12 @@ antenna = Device(
     (ANTENNA_LOC_WIDTH,ANTENNA_LOC_HEIGHT),
     PICTURE_PATH + ANTENNA_IMAGE)
 background.blit(antenna.current_picture, (antenna.abscisse, antenna.ordonnee))
-# Initialize the menu and select the first menu item.
-menu = Menu()
 
 # List of device which is used to manage connection and display
 device_list = [ antenna ]
+
+# Initialize the menu and select the first menu item.
+menu = Menu(device_list)
 
 # Waiting loop.
 while not stop:

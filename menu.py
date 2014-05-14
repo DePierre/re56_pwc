@@ -76,8 +76,9 @@ class Menu(object):
     surface = pygame.image.load(
         PICTURE_PATH + RIGHT_PANEL_IMAGE).convert_alpha()
 
-    def __init__(self):
-        self.select_menu(MENU1_INDEX)
+    def __init__(self, devices):
+        self.devices = devices
+        self.select_menu(MENU3_INDEX)
 
     def select_menu(self, index):
         """Place the arrow selector beside the menu item indexed 'index'."""
@@ -85,7 +86,33 @@ class Menu(object):
             if item.is_selected:
                 item.unselect()
         self.items[index].select()
+        self.force_distribution(index)
         self.load()
+
+    def force_distribution(self, index):
+        """Regenerate the mobile distribution according to the selected
+        scenario.
+
+        index = 1: Close distribution
+        index = 2: Far distribution
+        index = 3: Random distribution
+
+        """
+        if index == MENU1_INDEX:
+            self.close_distribution()
+        elif index == MENU2_INDEX:
+            self.far_distribution()
+        else:
+            self.random_distribution()
+
+    def close_distribution(self):
+        pass
+
+    def far_distribution(self):
+        pass
+
+    def random_distribution(self):
+        pass
 
     def load(self):
         self.surface.fill((0,0,0))
