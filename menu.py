@@ -111,7 +111,6 @@ class Menu(object):
         elif index == MENU2_INDEX:
             self.far_distribution()
         else:
-            print 'Random distribution selected'
             self.random_distribution()
 
     def close_distribution(self):

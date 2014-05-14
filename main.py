@@ -57,7 +57,6 @@ while not stop:
                 print "Feature not implemented yet. Sorry."
     # Reload window
     tmp_background = copy.copy(background) # Reset tmp_background to initial background
-    print 'Debug: ', devices
     for device in devices:
         tmp_background.blit(device.current_picture,
                             (device.abscisse, device.ordonnee))
