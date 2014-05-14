@@ -87,7 +87,7 @@ class Menu(object):
                 item.unselect()
         self.items[index].select()
         self.force_distribution(index)
-        self.load()
+        self.refresh()
 
     def force_distribution(self, index):
         """Regenerate the mobile distribution according to the selected
@@ -114,7 +114,8 @@ class Menu(object):
     def random_distribution(self):
         pass
 
-    def load(self):
+    def refresh(self):
+        """Reload each image of menu."""
         self.surface.fill((0,0,0))
         self.surface = pygame.image.load(
             PICTURE_PATH + RIGHT_PANEL_IMAGE).convert_alpha()
