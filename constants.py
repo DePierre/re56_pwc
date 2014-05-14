@@ -42,7 +42,7 @@ CELL_HEIGHT = 20  # Pixels.
 CELL_WIDTH = 20  # Pixels.
 
 # Maximum number of devices
-MAX_DEVICS = 100
+MAX_DEVICES = 100
 
 # Antenna location
 ANTENNA_LOC_HEIGHT = GRID_HEIGHT / 2 - CELL_HEIGHT

@@ -3,9 +3,11 @@
 
 import os
 
+import copy
 import pygame
 from pygame.locals import *
 
+from shared_resources import devices
 from constants import *
 
 pygame.init()
@@ -14,9 +16,8 @@ pygame.init()
 # not sizable.
 window = pygame.display.set_mode((MAIN_WINDOW_WIDTH, MAIN_WINDOW_HEIGHT))
 
-from device import *
-from menu import *
-
+from device import Device
+from menu import Menu
 
 # Variable used to stop the window.
 stop = False
@@ -29,13 +30,13 @@ antenna = Device(
     PICTURE_PATH + ANTENNA_IMAGE)
 background.blit(antenna.current_picture, (antenna.abscisse, antenna.ordonnee))
 #declare a copy of bakground which will be used to update the screen
-tmp_background = background
+tmp_background = copy.copy(background)
 
 # List of devices which is used to manage connection and display
-device_list = [ antenna ]
+devices.append(antenna)
 
 # Initialize the menu and select the first menu item.
-menu = Menu(device_list)
+menu = Menu()
 
 # Waiting loop.
 while not stop:
@@ -55,8 +56,9 @@ while not stop:
                 # grid.
                 print "Feature not implemented yet. Sorry."
     # Reload window
-    tmp_background = background # Reset tmp_background to initial background
-    for device in device_list:
+    tmp_background = copy.copy(background) # Reset tmp_background to initial background
+    print 'Debug: ', devices
+    for device in devices:
         tmp_background.blit(device.current_picture,
                             (device.abscisse, device.ordonnee))
     window.fill((0,0,0))

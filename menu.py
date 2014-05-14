@@ -1,9 +1,13 @@
 # -*-coding:utf-8 -*-
 
+import random
 import pygame
 from pygame.locals import *
 
+
+from shared_resources import devices
 from constants import *
+from device import Device
 
 
 class Menu_Item(object):
@@ -76,8 +80,7 @@ class Menu(object):
     surface = pygame.image.load(
         PICTURE_PATH + RIGHT_PANEL_IMAGE).convert_alpha()
 
-    def __init__(self, devices):
-        self.devices = devices
+    def __init__(self):
         self.select_menu(MENU3_INDEX)
 
     def select_menu(self, index):
@@ -98,11 +101,17 @@ class Menu(object):
         index = 3: Random distribution
 
         """
+        # HACK: Clean the previous list while keeping the reference
+        while True:
+            if len(devices) == 1:
+                break
+            devices.pop()
         if index == MENU1_INDEX:
             self.close_distribution()
         elif index == MENU2_INDEX:
             self.far_distribution()
         else:
+            print 'Random distribution selected'
             self.random_distribution()
 
     def close_distribution(self):
@@ -112,7 +121,22 @@ class Menu(object):
         pass
 
     def random_distribution(self):
-        pass
+        while len(devices) < MAX_DEVICES + 1:
+            # Randomly generate the (x, y) coordinates of the new device.
+            x_coor = random.randint(0, GRID_HEIGHT)
+            x_coor -= x_coor % CELL_HEIGHT
+            y_coor = random.randint(0, GRID_HEIGHT)
+            y_coor -= y_coor % CELL_WIDTH
+            # A mobile device cannot be onto the antenna
+            if (x_coor == devices[0].abscisse and
+                    y_coor == devices[0].ordonnee):
+                continue
+            # Create the new device
+            new_device = Device(
+                (x_coor, y_coor),
+                PICTURE_PATH + DEVICE_TRY_TO_CONNECT_UP_IMAGE)
+            # Add the new device to the list of devices
+            devices.append(new_device)
 
     def refresh(self):
         """Reload each image of menu."""
