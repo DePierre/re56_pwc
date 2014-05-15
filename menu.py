@@ -12,8 +12,8 @@ from device import Device
 
 class Menu_Item(object):
     # Default coord of the menu_item 1.
-    abscisse = 770
-    ordonnee = 570
+    abscisse = MENU_ITEM_OFFSET_FROM_LEFT_RIGHT_PANEL_SIDE
+    ordonnee = MENU_OFFSET_FROM_TOP_RIGHT_PANEL
     # This object will contain the picture corresponding to a menu item not
     # selected.
     picture = 0
@@ -64,15 +64,15 @@ class Menu_Item(object):
 class Menu(object):
     items = [
         Menu_Item(
-            (50, 570),
+            (MENU_ITEM_OFFSET_FROM_LEFT_RIGHT_PANEL_SIDE, MENU_OFFSET_FROM_TOP_RIGHT_PANEL),
             PICTURE_PATH + MENU_SELECTION1_IMAGE,
             PICTURE_PATH + MENU_SELECTION1_SELECTED_IMAGE),
         Menu_Item(
-            (50, 620),
+            (MENU_ITEM_OFFSET_FROM_LEFT_RIGHT_PANEL_SIDE, MENU_OFFSET_FROM_TOP_RIGHT_PANEL + MENU_ITEM_HEIGHT),
             PICTURE_PATH + MENU_SELECTION2_IMAGE,
             PICTURE_PATH + MENU_SELECTION2_SELECTED_IMAGE),
         Menu_Item(
-            (50, 670),
+            (MENU_ITEM_OFFSET_FROM_LEFT_RIGHT_PANEL_SIDE, MENU_OFFSET_FROM_TOP_RIGHT_PANEL + 2*MENU_ITEM_HEIGHT),
             PICTURE_PATH + MENU_SELECTION3_IMAGE,
             PICTURE_PATH + MENU_SELECTION3_SELECTED_IMAGE)]
     arrow_selector = pygame.image.load(
