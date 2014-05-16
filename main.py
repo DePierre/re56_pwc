@@ -54,7 +54,9 @@ while not stop:
             elif event.key == K_KP_ENTER or K_RETURN:
                 # Raise exception to distribute again the devices into the
                 # grid.
-                print "Feature not implemented yet. Sorry."
+                #print "Feature not implemented yet. Sorry."
+                menu.select_menu(menu.menu_pointed)
+                
     # Reload window
     tmp_background = copy.copy(background) # Reset tmp_background to initial background
     for device in devices:

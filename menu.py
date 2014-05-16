@@ -79,9 +79,11 @@ class Menu(object):
         PICTURE_PATH + ARROW_SELECTOR_IMAGE).convert_alpha()
     surface = pygame.image.load(
         PICTURE_PATH + RIGHT_PANEL_IMAGE).convert_alpha()
+    menu_pointed = MENU1_INDEX
 
     def __init__(self):
         self.select_menu(MENU3_INDEX)
+        self.force_distribution(MENU3_INDEX)
 
     def select_menu(self, index):
         """Place the arrow selector beside the menu item indexed 'index'."""
@@ -108,10 +110,13 @@ class Menu(object):
             devices.pop()
         if index == MENU1_INDEX:
             self.close_distribution()
+            pygame.display.set_caption("close distribution")
         elif index == MENU2_INDEX:
             self.far_distribution()
+            pygame.display.set_caption("far distribution")
         else:
             self.random_distribution()
+            pygame.display.set_caption("random distribution")
 
     def close_distribution(self):
         """Create MAX_DEVICES devices close to the antenna on the grid."""
@@ -191,16 +196,13 @@ class Menu(object):
                 item.picture,
                 (item.abscisse, item.ordonnee))
         # Load image of arrow selector beside the menu item selected.
-        for item in self.items:
-            if item.is_selected:
-                self.surface.blit(
-                    self.arrow_selector, (
-                        item.abscisse +
-                        ARROW_SELECTOR_WIDTH_OFFSET_FROM_MENU_ITEM,
-                        item.ordonnee +
-                        ARROW_SELECTOR_HEIGHT_OFFSET_FROM_MENU_ITEM
-                    ))
-                break
+        self.surface.blit(
+            self.arrow_selector, (
+                self.items[self.menu_pointed].abscisse +
+                ARROW_SELECTOR_WIDTH_OFFSET_FROM_MENU_ITEM,
+                self.items[self.menu_pointed].ordonnee +
+                ARROW_SELECTOR_HEIGHT_OFFSET_FROM_MENU_ITEM
+            ))
 
     def get_index_menu_selected(self):
         """Get index of the menu selected."""
@@ -210,16 +212,14 @@ class Menu(object):
 
     def menu_next(self):
         """Select the next menu item in the list."""
-        index = self.get_index_menu_selected()
-        index += 1
-        if index >= len(self.items):
-            index = 0
-        self.select_menu(index)
+        self.menu_pointed += 1
+        if self.menu_pointed >= len(self.items):
+            self.menu_pointed = 0
+        self.refresh()
 
     def menu_previous(self):
         """Select the previous menu item in the list."""
-        index = self.get_index_menu_selected()
-        index -= 1
-        if index < 0:
-            index = len(self.items) - 1
-        self.select_menu(index)
+        self.menu_pointed -= 1
+        if self.menu_pointed < 0:
+            self.menu_pointed = len(self.items) - 1
+        self.refresh()
