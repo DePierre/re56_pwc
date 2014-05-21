@@ -4,6 +4,8 @@
 import os
 
 import copy
+import thread
+import workers
 import pygame
 from pygame.locals import *
 
@@ -38,6 +40,14 @@ devices.append(antenna)
 # Initialize the menu and select the first menu item.
 menu = Menu()
 
+#initialize the worker thread
+try:
+    worker = thread.start_new_thread(workers.do_work, ())
+except Exception as errtxt:
+    print errtxt
+    stop = True
+
+
 # Waiting loop.
 while not stop:
     for event in pygame.event.get():
@@ -68,3 +78,4 @@ while not stop:
 
     # Refresh
     pygame.display.flip()
+
