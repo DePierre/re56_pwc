@@ -11,7 +11,7 @@ from math import *
 class Device(object):
     abscisse = 0
     ordonnee = 0
-    distance_from_antenna = 0.0
+    distance_from_antenna = 0.0 # This distance is expressed in meters
     current_emitted_power = 0.0
     current_command = COMMAND_UP
     connexion_status = NOT_CONNECTED

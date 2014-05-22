@@ -28,6 +28,34 @@ DEVICE_TRY_TO_CONNECT_UP_IMAGE = "try_up.png"
 DEVICE_TRY_TO_CONNECT_DOWN_IMAGE = "try_down.png"
 DEVICE_DISCONNECTED_IMAGE = "disconnected.png"
 
+# Maximum number of devices
+MAX_DEVICES = 100
+
+# UMTS frequency in MHz
+UMTS_FREQ = 1900
+
+# Antenna and UE gain in dB
+ANTENNA_GAIN = 0
+UE_GAIN = 0
+
+# Receivers sensitivity in dBm
+ANTENNA_SENSITIVITY = -121
+UE_SENSITIVITY = -117
+
+# Power control steps in dB
+POWER_CONTROL_STEP = 1
+
+# Antenna emitted powerin dB
+ANTENNA_EMITTED_POWER = 90.0
+
+# UE max & min emitted power in dBm
+UE_MAX_EMITTED_POWER = 21
+UE_MIN_EMITTED_POWER = -11
+
+# Open loop constants
+PREAMBLE_RETRANS_MAX = 8
+MAX_PREAMBLE_CYCLE = 4
+
 # For every constant defined hereafter 1 pixel unit will correspond to the
 # following value in meter
 PIX_IN_METERS = 100
@@ -40,9 +68,6 @@ GRID_WIDTH = GRID_HEIGHT
 
 CELL_HEIGHT = 20  # Pixels.
 CELL_WIDTH = 20  # Pixels.
-
-# Maximum number of devices
-MAX_DEVICES = 100
 
 # Antenna location
 ANTENNA_LOC_HEIGHT = GRID_HEIGHT / 2 - CELL_HEIGHT
