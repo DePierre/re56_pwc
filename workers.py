@@ -2,12 +2,12 @@
 
 import os
 
-import math
 import copy
 import thread
 from device import Device
 from shared_resources import devices
 from constants import *
+from math import *
 
 # this a tmp import used only to make an example of execution on this worker
 import time
@@ -48,25 +48,30 @@ def open_loop():
 
     """
     # Retry MAX_PREAMBLE_CYCLE times before considering the UE connected or not
+    i = 0
     while i < MAX_PREAMBLE_CYCLE:
         # Iterates over the devices (but not the antenna)
         for device in devices[1:]:
-            device.set_device_trying_to_connect()
             # Increase PREAMBLE_RETRANS_MAX times
+            j = 0
             while j < PREAMBLE_RETRANS_MAX:
                 # computation of the free space path loss.
-                free_space_loss = 20*log10(UMTS_FREQUENCY) + 20*log10(device.distance_from_antenna/1000) + 32.44
+                free_space_loss = 20*log10(UMTS_FREQ/1000) + 20*log10(device.distance_from_antenna/1000) + 32.44
                 # Computation of the emitted power to reach to be sure the
                 # NodeB will receive the signal.
                 emitted_power_to_reach = ANTENNA_SENSITIVITY - ANTENNA_GAIN - UE_GAIN + free_space_loss
                 # If the current emitted power isn't sufficient then increase
-                # it by a step
+                # it by a step                
                 if device.current_emitted_power >= emitted_power_to_reach:
                     device.set_device_connected()
-                elif device.current_emitted_power < UE_MAX_EMITTED_POWER:
-                    device.current_emitted_power += POWER_CONTROL_STEP
-                    device.set_command_up()
-                else :
-                    device.set_device_disconnected()
+                else:
+                    if device.current_emitted_power < UE_MAX_EMITTED_POWER:
+                        device.current_emitted_power += POWER_CONTROL_STEP
+                        device.set_command_up()
+                    else:
+                        device.set_device_disconnected()
                 j += 1
         i += 1
+    for device in devices[1:]:
+        if device.connexion_status != CONNECTED:
+            device.set_device_disconnected()

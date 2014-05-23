@@ -137,8 +137,9 @@ class Menu(object):
                 continue
             # Create the new device
             new_device = Device(
-                (x_coor, y_coor),
-                PICTURE_PATH + DEVICE_TRY_TO_CONNECT_UP_IMAGE)
+                (x_coor, y_coor))
+            # set the initial emitted power to the min
+            new_device.current_emitted_power = UE_MIN_EMITTED_POWER
             # Add the new device to the list of devices
             devices.append(new_device)
 
@@ -161,8 +162,9 @@ class Menu(object):
                 continue
             # Create the new device
             new_device = Device(
-                (x_coor, y_coor),
-                PICTURE_PATH + DEVICE_TRY_TO_CONNECT_UP_IMAGE)
+                (x_coor, y_coor))
+            # set the initial emitted power to the min
+            new_device.current_emitted_power = UE_MIN_EMITTED_POWER
             # Add the new device to the list of devices
             devices.append(new_device)
 
@@ -180,8 +182,9 @@ class Menu(object):
                 continue
             # Create the new device
             new_device = Device(
-                (x_coor, y_coor),
-                PICTURE_PATH + DEVICE_TRY_TO_CONNECT_UP_IMAGE)
+                (x_coor, y_coor))
+            # set the initial emitted power to the min
+            new_device.current_emitted_power = UE_MIN_EMITTED_POWER
             # Add the new device to the list of devices
             devices.append(new_device)
 

@@ -45,8 +45,8 @@ UE_SENSITIVITY = -117
 # Power control steps in dB
 POWER_CONTROL_STEP = 1
 
-# Antenna emitted powerin dB
-ANTENNA_EMITTED_POWER = 90.0
+# Antenna emitted powerin dBm
+ANTENNA_EMITTED_POWER = 50.0
 
 # UE max & min emitted power in dBm
 UE_MAX_EMITTED_POWER = 21
@@ -58,7 +58,7 @@ MAX_PREAMBLE_CYCLE = 4
 
 # For every constant defined hereafter 1 pixel unit will correspond to the
 # following value in meter
-PIX_IN_METERS = 100
+PIX_IN_METERS = 1000000
 
 # Size in pixels of the main window.
 MAIN_WINDOW_HEIGHT = 720  # Max which could be used: 1366 x 768 screen (16:9).

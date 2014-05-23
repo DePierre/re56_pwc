@@ -28,8 +28,8 @@ stop = False
 background = pygame.image.load(PICTURE_PATH + BACKGROUND_SCALED_IMAGE).convert_alpha()
 # Place antenna at the very center.
 antenna = Device(
-    (ANTENNA_LOC_WIDTH,ANTENNA_LOC_HEIGHT),
-    PICTURE_PATH + ANTENNA_IMAGE)
+    (ANTENNA_LOC_WIDTH,ANTENNA_LOC_HEIGHT))
+antenna.set_picture(PICTURE_PATH + ANTENNA_IMAGE)
 antenna.current_emitted_power = ANTENNA_EMITTED_POWER
 background.blit(antenna.current_picture, (antenna.abscisse, antenna.ordonnee))
 #declare a copy of bakground which will be used to update the screen
@@ -43,7 +43,7 @@ menu = Menu()
 
 #initialize the worker thread
 try:
-    worker = thread.start_new_thread(workers.do_work, ())
+    worker = thread.start_new_thread(workers.open_loop, ())
 except Exception as errtxt:
     print errtxt
     stop = True
