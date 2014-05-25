@@ -4,8 +4,8 @@ import pygame
 from pygame.locals import *
 
 
-from shared_resources import devices
 from constants import *
+from shared_resources import devices
 from device import UE
 
 
@@ -29,18 +29,18 @@ class Menu_Item(object):
         self.PicturePath_unsel = PicturePath_unselected
         self.PicturePath_sel = PicturePath_selected
         self.picture = pygame.image.load(
-            PicturePath_unselected).convert_alpha()
+            PicturePath_unselected)
 
     def select(self):
         """Set the right image to the menu item."""
         self.picture.fill((0,0,0))
-        self.picture = pygame.image.load(self.PicturePath_sel).convert_alpha()
+        self.picture = pygame.image.load(self.PicturePath_sel)
         self.is_selected = True
 
     def unselect(self):
         self.picture.fill((0,0,0))
         self.picture = pygame.image.load(
-            self.PicturePath_unsel).convert_alpha()
+            self.PicturePath_unsel)
         self.is_selected = False
 
     def change_picture_selected(self, PicturePath):
@@ -55,29 +55,29 @@ class Menu_Item(object):
     def reload_picture(self):
         self.picture.fill((0,0,0))
         if self.is_selected:
-            self.picture = pygame.image.load(PicturePath_sel).convert_alpha()
+            self.picture = pygame.image.load(PicturePath_sel)
         else :
-            self.picture = pygame.image.load(PicturePath_unsel).convert_alpha()
+            self.picture = pygame.image.load(PicturePath_unsel)
 
 
 class Menu(object):
     items = [
         Menu_Item(
             (MENU_ITEM_OFFSET_FROM_LEFT_RIGHT_PANEL_SIDE, MENU_OFFSET_FROM_TOP_RIGHT_PANEL),
-            PICTURE_PATH + MENU_SELECTION1_IMAGE,
-            PICTURE_PATH + MENU_SELECTION1_SELECTED_IMAGE),
+            MENU_SELECTION1_IMAGE,
+            MENU_SELECTION1_SELECTED_IMAGE),
         Menu_Item(
             (MENU_ITEM_OFFSET_FROM_LEFT_RIGHT_PANEL_SIDE, MENU_OFFSET_FROM_TOP_RIGHT_PANEL + MENU_ITEM_HEIGHT),
-            PICTURE_PATH + MENU_SELECTION2_IMAGE,
-            PICTURE_PATH + MENU_SELECTION2_SELECTED_IMAGE),
+            MENU_SELECTION2_IMAGE,
+            MENU_SELECTION2_SELECTED_IMAGE),
         Menu_Item(
             (MENU_ITEM_OFFSET_FROM_LEFT_RIGHT_PANEL_SIDE, MENU_OFFSET_FROM_TOP_RIGHT_PANEL + 2*MENU_ITEM_HEIGHT),
-            PICTURE_PATH + MENU_SELECTION3_IMAGE,
-            PICTURE_PATH + MENU_SELECTION3_SELECTED_IMAGE)]
+            MENU_SELECTION3_IMAGE,
+            MENU_SELECTION3_SELECTED_IMAGE)]
     arrow_selector = pygame.image.load(
-        PICTURE_PATH + ARROW_SELECTOR_IMAGE).convert_alpha()
+        ARROW_SELECTOR_IMAGE)
     surface = pygame.image.load(
-        PICTURE_PATH + RIGHT_PANEL_IMAGE).convert_alpha()
+        RIGHT_PANEL_IMAGE)
     menu_pointed = MENU3_INDEX
 
     def __init__(self):
@@ -102,6 +102,8 @@ class Menu(object):
         index = 3: Random distribution
 
         """
+        if not devices:
+            return
         # HACK: Clean the previous list while keeping the reference
         while True:
             if len(devices) == 1:
@@ -153,8 +155,7 @@ class Menu(object):
     def refresh(self):
         """Reload each image of menu."""
         self.surface.fill((0,0,0))
-        self.surface = pygame.image.load(
-            PICTURE_PATH + RIGHT_PANEL_IMAGE).convert_alpha()
+        self.surface = pygame.image.load(RIGHT_PANEL_IMAGE)
         # Load each image to the surface.
         for item in self.items:
             self.surface.blit(
