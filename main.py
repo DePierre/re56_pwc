@@ -43,7 +43,6 @@ menu = Menu()
 
 worker = Worker()
 worker.start()
-worker.join()
 
 
 # Waiting loop.
@@ -64,7 +63,6 @@ while not stop:
                 menu.select_menu(menu.menu_pointed)
                 worker = Worker()
                 worker.start()
-                worker.join()
 
     # Reload window
     tmp_background = copy.copy(background) # Reset tmp_background to initial background
