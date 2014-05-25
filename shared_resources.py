@@ -1,5 +1,3 @@
-devices = []
-
 # BER to C/I table
 # This table gives us a corresponding BER from a C/I computed
 # This is defined as a list of tuples (BER,C/I) in (%,dB)

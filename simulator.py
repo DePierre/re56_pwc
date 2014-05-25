@@ -4,7 +4,6 @@ from pygame.locals import *
 from copy import copy
 from math import log10
 
-from shared_resources import devices
 from constants import *
 from device import Antenna, UE
 from menu import Menu
@@ -18,6 +17,7 @@ class Simulator(object):
         self._bg = None
         self._menu = None
         self._clock = None
+        self.ues = []
         self.weight = MAIN_WINDOW_WIDTH
         self.height = MAIN_WINDOW_HEIGHT
         self.size = (self.weight, self.height)
@@ -30,12 +30,10 @@ class Simulator(object):
         self._bg_original = pygame.image.load(
             BACKGROUND_SCALED_IMAGE)
         self._bg = copy(self._bg_original)
+        # Devices init.
+        self.antenna = Antenna((ANTENNA_LOC_WIDTH, ANTENNA_LOC_HEIGHT))
         # Menu init.
         self._menu = Menu(self)
-        # Devices init.
-        antenna = Antenna((ANTENNA_LOC_WIDTH, ANTENNA_LOC_HEIGHT))
-        antenna.set_image(ANTENNA_IMAGE)
-        devices.append(antenna)
         # Clock init
         self._clock = pygame.time.Clock()
         self._running = True
@@ -59,7 +57,10 @@ class Simulator(object):
 
     def on_render(self):
         self._bg = copy(self._bg_original)
-        for device in devices:
+        self._bg.blit(
+            self.antenna.image,
+            (self.antenna.x, self.antenna.y))
+        for device in self.ues:
             self._bg.blit(
                 device.image,
                 (device.x, device.y))
@@ -85,38 +86,41 @@ class Simulator(object):
     def close_distribution(self):
         """Create MAX_DEVICES devices close to the antenna on the grid."""
         pygame.display.set_caption("Close distribution")
-        while len(devices) < MAX_DEVICES + 1:
+        self.ues = []
+        while len(self.ues) < MAX_DEVICES + 1:
             # Create the new device
-            new_device = UE((0, 0))
+            new_device = UE((0, 0), self.antenna)
             new_device.set_coor_close()
             # Set its image.
             new_device.set_device_trying_to_connect()
             # Add the new device to the list of devices
-            devices.append(new_device)
+            self.ues.append(new_device)
 
     def far_distribution(self):
         """Create MAX_DEVICES devices far from the antenna on the grid."""
         pygame.display.set_caption("Far distribution")
-        while len(devices) < MAX_DEVICES + 1:
+        self.ues = []
+        while len(self.ues) < MAX_DEVICES + 1:
             # Create the new device
-            new_device = UE((0, 0))
+            new_device = UE((0, 0), self.antenna)
             new_device.set_coor_far()
             # Set its image.
             new_device.set_device_trying_to_connect()
             # Add the new device to the list of devices
-            devices.append(new_device)
+            self.ues.append(new_device)
 
     def random_distribution(self):
         """Create MAX_DEVICES devices randomly on the grid."""
         pygame.display.set_caption("Random distribution")
-        while len(devices) < MAX_DEVICES + 1:
+        self.ues = []
+        while len(self.ues) < MAX_DEVICES + 1:
             # Create the new device
-            new_device = UE((0, 0))
+            new_device = UE((0, 0), self.antenna)
             new_device.set_coor_random()
             # Set its image.
             new_device.set_device_trying_to_connect()
             # Add the new device to the list of devices
-            devices.append(new_device)
+            self.ues.append(new_device)
 
     def open_loop(self):
         """Implementation of the open loop.
@@ -144,7 +148,7 @@ class Simulator(object):
         i = 0
         while i < MAX_PREAMBLE_CYCLE:
             # Iterates over the devices (but not the antenna)
-            for device in devices[1:]:
+            for device in self.ues:
                 # Increase PREAMBLE_RETRANS_MAX times
                 j = 0
                 while j < PREAMBLE_RETRANS_MAX:
@@ -184,7 +188,7 @@ class Simulator(object):
                                     self.on_render()
                         j += 1
             i += 1
-        for device in devices[1:]:
+        for device in self.ues:
             if device.status != CONNECTED:
                 prev_cmd = device.command
                 prev_status = device.status

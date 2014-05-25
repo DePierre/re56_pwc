@@ -5,7 +5,6 @@ from pygame.locals import *
 
 
 from constants import *
-from shared_resources import devices
 
 
 class Menu_Item(object):
@@ -81,8 +80,8 @@ class Menu(object):
 
     def __init__(self, simulator):
         self.simu = simulator
+        self.init = False
         self.select_menu(MENU3_INDEX)
-        self.force_distribution(MENU3_INDEX)
 
     def select_menu(self, index):
         """Place the arrow selector beside the menu item indexed 'index'."""
@@ -90,7 +89,9 @@ class Menu(object):
             if item.is_selected:
                 item.unselect()
         self.items[index].select()
-        self.force_distribution(index)
+        if self.init:
+            self.force_distribution(index)
+        self.init = True
         self.refresh()
 
     def force_distribution(self, index):
@@ -102,13 +103,6 @@ class Menu(object):
         index = 3: Random distribution
 
         """
-        if not devices:
-            return
-        # HACK: Clean the previous list while keeping the reference
-        while True:
-            if len(devices) == 1:
-                break
-            devices.pop()
         if index == MENU1_INDEX:
             self.simu.close_distribution()
         elif index == MENU2_INDEX:

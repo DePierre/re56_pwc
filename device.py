@@ -8,7 +8,6 @@ from threading import Lock
 from math import sqrt
 
 from constants import *
-from shared_resources import devices
 
 
 class Device(object):
@@ -34,16 +33,18 @@ class Device(object):
 class Antenna(Device):
     """Antenna."""
 
-    def __init(self, (x, y)):
+    def __init__(self, (x, y)):
         Device.__init__(self, (x, y))
         self.emitted_power = ANTENNA_EMITTED_POWER
+        self.image = pygame.image.load(ANTENNA_IMAGE).convert_alpha()
 
 
 class UE(Device):
     """User Equipment."""
 
-    def __init(self, (x, y)):
+    def __init__(self, (x, y), antenna):
         Device.__init__(self, (x, y))
+        self.antenna = antenna
         self.distance_from_antenna = self.compute_distance_from_antenna()
         # Set the initial emitted power to the min.
         self.emitted_power = UE_MIN_EMITTED_POWER
@@ -63,8 +64,8 @@ class UE(Device):
         corner of both device and antenna which corresponds to the direct
         coordinate of them.
         """
-        distance_x = abs(devices[0].x - self.x) * PIX_IN_METERS
-        distance_y = abs(devices[0].y - self.y) * PIX_IN_METERS
+        distance_x = abs(self.antenna.x - self.x) * PIX_IN_METERS
+        distance_y = abs(self.antenna.y - self.y) * PIX_IN_METERS
         return sqrt(pow(distance_x,2) + pow(distance_y,2))
 
     def set_coor_random(self):
@@ -76,8 +77,8 @@ class UE(Device):
             y_coor = random.randint(0, GRID_HEIGHT)
             y_coor -= y_coor % CELL_WIDTH
             # A mobile device cannot be onto the antenna
-            if (x_coor == devices[0].x and
-                    y_coor == devices[0].y):
+            if (x_coor == self.antenna.x and
+                    y_coor == self.antenna.y):
                 continue
             break
         self.x = x_coor
@@ -94,12 +95,12 @@ class UE(Device):
             y_coor = random.randint(0, GRID_HEIGHT)
             y_coor -= y_coor % CELL_WIDTH
             # A mobile device cannot be onto the antenna
-            if (x_coor == devices[0].x and
-                    y_coor == devices[0].y):
+            if (x_coor == self.antenna.x and
+                    y_coor == self.antenna.y):
                 continue
             # Circle: (x - a)^2 + (y - b)^2 = r^2
-            if ((x_coor - devices[0].x) ** 2 +
-                    (y_coor - devices[0].y) ** 2 > MAX_DISTANCE ** 2):
+            if ((x_coor - self.antenna.x) ** 2 +
+                    (y_coor - self.antenna.y) ** 2 > MAX_DISTANCE ** 2):
                 continue
             break
         self.x = x_coor
@@ -116,12 +117,12 @@ class UE(Device):
             y_coor = random.randint(0, GRID_HEIGHT)
             y_coor -= y_coor % CELL_WIDTH
             # A mobile device cannot be onto the antenna
-            if (x_coor == devices[0].x and
-                    y_coor == devices[0].y):
+            if (x_coor == self.antenna.x and
+                    y_coor == self.antenna.y):
                 continue
             # Circle: (x - a)^2 + (y - b)^2 = r^2
-            if ((x_coor - devices[0].x) ** 2 +
-                    (y_coor - devices[0].y) ** 2 < MIN_DISTANCE ** 2):
+            if ((x_coor - self.antenna.x) ** 2 +
+                    (y_coor - self.antenna.y) ** 2 < MIN_DISTANCE ** 2):
                 continue
             break
         self.x = x_coor
