@@ -19,22 +19,18 @@ class Device(object):
     connexion_status = NOT_CONNECTED
     # Object which will contain the picture descriptor assigned to the
     # device.
-    current_picture = 0
+    current_picture = None
 
     def __init__(self, (x, y)):
         self.abscisse = x
         self.ordonnee = y
         self.distance_from_antenna = self.compute_distance_from_antenna()
         self.current_emitted_power = 0.0
-        self.current_command = COMMAND_UP
-        self.connexion_status = TRY_CONNECT
-        self.reload()
-        
+
     def set_picture(self, picturepath):
         """To be used to assign the antenna picture
         """
-        self.current_picture = pygame.image.load(
-                picturepath).convert_alpha()
+        self.current_picture = pygame.image.load(picturepath).convert_alpha()
 
     def compute_distance_from_antenna(self):
         """Compute the distance between the mobile device and the antenna
@@ -51,6 +47,23 @@ class Device(object):
         distance_x = abs(ANTENNA_LOC_WIDTH - self.abscisse) * PIX_IN_METERS
         distance_y = abs(ANTENNA_LOC_HEIGHT - self.ordonnee) * PIX_IN_METERS
         return sqrt(pow(distance_x,2) + pow(distance_y,2))
+
+
+class Antenna(Device):
+    """Antenna."""
+
+    def __init(self, (x, y)):
+        Device.__init(self, (x, y))
+
+
+class UE(Device):
+    """User Equipment."""
+
+    def __init(self, (x, y)):
+        Device.__init(self, (x, y))
+        self.current_command = COMMAND_UP
+        self.connexion_status = TRY_CONNECT
+        self.reload()
 
     def set_command_up(self):
         """Set the current_command of the device to COMMAND_UP.
@@ -122,18 +135,24 @@ class Device(object):
         """
         self.connexion_status = NOT_CONNECTED
         self.current_picture = pygame.image.load(
-            PICTURE_PATH + DEVICE_DISCONNECTED_IMAGE).convert_alpha()
-            
+            PICTURE_PATH + DEVICE_DISCONNECTED_IMAGE
+        ).convert_alpha()
+
     def reload(self):
-        """reload the current picture according to connection status and current command
+        """Reload the current picture.
+
+        According to connection status and current command.
+
         """
         if self.connexion_status == TRY_CONNECT:
             if self.current_command == COMMAND_UP:
                 self.current_picture = pygame.image.load(
-                    PICTURE_PATH + DEVICE_TRY_TO_CONNECT_UP_IMAGE).convert_alpha()
+                    PICTURE_PATH + DEVICE_TRY_TO_CONNECT_UP_IMAGE
+                ).convert_alpha()
             else :
                 self.current_picture = pygame.image.load(
-                    PICTURE_PATH + DEVICE_TRY_TO_CONNECT_DOWN_IMAGE).convert_alpha()
+                    PICTURE_PATH + DEVICE_TRY_TO_CONNECT_DOWN_IMAGE
+                ).convert_alpha()
         elif self.connexion_status == CONNECTED:
             if self.current_command == COMMAND_UP:
                 self.current_picture = pygame.image.load(
@@ -144,4 +163,4 @@ class Device(object):
         else :
             self.current_picture = pygame.image.load(
                 PICTURE_PATH + DEVICE_DISCONNECTED_IMAGE).convert_alpha()
-       
+

@@ -18,7 +18,7 @@ pygame.init()
 # not sizable.
 window = pygame.display.set_mode((MAIN_WINDOW_WIDTH, MAIN_WINDOW_HEIGHT))
 
-from device import Device
+from device import Antenna
 from menu import Menu
 
 # Variable used to stop the window.
@@ -27,7 +27,7 @@ stop = False
 # Initialize background image.
 background = pygame.image.load(PICTURE_PATH + BACKGROUND_SCALED_IMAGE).convert_alpha()
 # Place antenna at the very center.
-antenna = Device(
+antenna = Antenna(
     (ANTENNA_LOC_WIDTH,ANTENNA_LOC_HEIGHT))
 antenna.set_picture(PICTURE_PATH + ANTENNA_IMAGE)
 antenna.current_emitted_power = ANTENNA_EMITTED_POWER
@@ -63,20 +63,18 @@ while not stop:
                 menu.menu_previous()
             # keypad enter or enter
             elif event.key == K_KP_ENTER or K_RETURN:
-                # Raise exception to distribute again the devices into the
-                # grid.
-                #print "Feature not implemented yet. Sorry."
+                # Update the selected item of the menu.
                 menu.select_menu(menu.menu_pointed)
-                
+
     # Reload window
     tmp_background = copy.copy(background) # Reset tmp_background to initial background
     for device in devices:
-        tmp_background.blit(device.current_picture,
-                            (device.abscisse, device.ordonnee))
+        tmp_background.blit(
+            device.current_picture,
+            (device.abscisse, device.ordonnee))
     window.fill((0,0,0))
     window.blit(tmp_background, (0,0))
     window.blit(menu.surface, (GRID_WIDTH,0))
 
     # Refresh
     pygame.display.flip()
-

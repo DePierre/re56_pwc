@@ -7,7 +7,7 @@ from pygame.locals import *
 
 from shared_resources import devices
 from constants import *
-from device import Device
+from device import UE
 
 
 class Menu_Item(object):
@@ -136,10 +136,12 @@ class Menu(object):
                     (y_coor - devices[0].ordonnee) ** 2 > MAX_DISTANCE ** 2):
                 continue
             # Create the new device
-            new_device = Device(
+            new_device = UE(
                 (x_coor, y_coor))
-            # set the initial emitted power to the min
+            # Set the initial emitted power to the min.
             new_device.current_emitted_power = UE_MIN_EMITTED_POWER
+            # Set its picture.
+            new_device.set_device_trying_to_connect()
             # Add the new device to the list of devices
             devices.append(new_device)
 
@@ -161,10 +163,12 @@ class Menu(object):
                     (y_coor - devices[0].ordonnee) ** 2 < MIN_DISTANCE ** 2):
                 continue
             # Create the new device
-            new_device = Device(
+            new_device = UE(
                 (x_coor, y_coor))
-            # set the initial emitted power to the min
+            # Set the initial emitted power to the min.
             new_device.current_emitted_power = UE_MIN_EMITTED_POWER
+            # Set its picture.
+            new_device.set_device_trying_to_connect()
             # Add the new device to the list of devices
             devices.append(new_device)
 
@@ -181,10 +185,12 @@ class Menu(object):
                     y_coor == devices[0].ordonnee):
                 continue
             # Create the new device
-            new_device = Device(
+            new_device = UE(
                 (x_coor, y_coor))
-            # set the initial emitted power to the min
+            # Set the initial emitted power to the min
             new_device.current_emitted_power = UE_MIN_EMITTED_POWER
+            # Set its picture.
+            new_device.set_device_trying_to_connect()
             # Add the new device to the list of devices
             devices.append(new_device)
 

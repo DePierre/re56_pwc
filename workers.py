@@ -4,7 +4,6 @@ import os
 
 import copy
 import thread
-from device import Device
 from shared_resources import devices
 from constants import *
 from math import *
@@ -61,7 +60,7 @@ def open_loop():
                 # NodeB will receive the signal.
                 emitted_power_to_reach = ANTENNA_SENSITIVITY - ANTENNA_GAIN - UE_GAIN + free_space_loss
                 # If the current emitted power isn't sufficient then increase
-                # it by a step                
+                # it by a step.
                 if device.current_emitted_power >= emitted_power_to_reach:
                     device.set_device_connected()
                 else:
