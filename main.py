@@ -2,7 +2,7 @@
 #-*-coding:utf-8 -*
 
 import os
-import copy
+from copy import copy
 
 import pygame
 from pygame.locals import *
@@ -31,7 +31,7 @@ antenna.set_picture(PICTURE_PATH + ANTENNA_IMAGE)
 antenna.current_emitted_power = ANTENNA_EMITTED_POWER
 background.blit(antenna.current_picture, (antenna.abscisse, antenna.ordonnee))
 #declare a copy of bakground which will be used to update the screen
-tmp_background = copy.copy(background)
+tmp_background = copy(background)
 
 # List of devices which is used to manage connection and display
 devices.append(antenna)
@@ -65,7 +65,7 @@ while not stop:
                 worker.start()
 
     # Reload window
-    tmp_background = copy.copy(background) # Reset tmp_background to initial background
+    tmp_background = copy(background) # Reset tmp_background to initial background
     for device in devices:
         tmp_background.blit(
             device.current_picture,
