@@ -6,7 +6,6 @@ from pygame.locals import *
 
 from constants import *
 from shared_resources import devices
-from device import UE
 
 
 class Menu_Item(object):
@@ -80,7 +79,8 @@ class Menu(object):
         RIGHT_PANEL_IMAGE)
     menu_pointed = MENU3_INDEX
 
-    def __init__(self):
+    def __init__(self, simulator):
+        self.simu = simulator
         self.select_menu(MENU3_INDEX)
         self.force_distribution(MENU3_INDEX)
 
@@ -110,47 +110,11 @@ class Menu(object):
                 break
             devices.pop()
         if index == MENU1_INDEX:
-            self.close_distribution()
-            pygame.display.set_caption("Close distribution")
+            self.simu.close_distribution()
         elif index == MENU2_INDEX:
-            self.far_distribution()
-            pygame.display.set_caption("Far distribution")
+            self.simu.far_distribution()
         else:
-            self.random_distribution()
-            pygame.display.set_caption("Random distribution")
-
-    def close_distribution(self):
-        """Create MAX_DEVICES devices close to the antenna on the grid."""
-        while len(devices) < MAX_DEVICES + 1:
-            # Create the new device
-            new_device = UE((0, 0))
-            new_device.set_coor_close()
-            # Set its image.
-            new_device.set_device_trying_to_connect()
-            # Add the new device to the list of devices
-            devices.append(new_device)
-
-    def far_distribution(self):
-        """Create MAX_DEVICES devices far from the antenna on the grid."""
-        while len(devices) < MAX_DEVICES + 1:
-            # Create the new device
-            new_device = UE((0, 0))
-            new_device.set_coor_far()
-            # Set its image.
-            new_device.set_device_trying_to_connect()
-            # Add the new device to the list of devices
-            devices.append(new_device)
-
-    def random_distribution(self):
-        """Create MAX_DEVICES devices randomly on the grid."""
-        while len(devices) < MAX_DEVICES + 1:
-            # Create the new device
-            new_device = UE((0, 0))
-            new_device.set_coor_random()
-            # Set its image.
-            new_device.set_device_trying_to_connect()
-            # Add the new device to the list of devices
-            devices.append(new_device)
+            self.simu.random_distribution()
 
     def refresh(self):
         """Reload each image of menu."""

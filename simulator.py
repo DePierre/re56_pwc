@@ -6,7 +6,7 @@ from math import log10
 
 from shared_resources import devices
 from constants import *
-from device import Antenna
+from device import Antenna, UE
 from menu import Menu
 
 
@@ -31,7 +31,7 @@ class Simulator(object):
             BACKGROUND_SCALED_IMAGE)
         self._bg = copy(self._bg_original)
         # Menu init.
-        self._menu = Menu()
+        self._menu = Menu(self)
         # Devices init.
         antenna = Antenna((ANTENNA_LOC_WIDTH, ANTENNA_LOC_HEIGHT))
         antenna.set_image(ANTENNA_IMAGE)
@@ -81,6 +81,42 @@ class Simulator(object):
             self.on_loop()
             self.on_render()
         self.on_cleanup()
+
+    def close_distribution(self):
+        """Create MAX_DEVICES devices close to the antenna on the grid."""
+        pygame.display.set_caption("Close distribution")
+        while len(devices) < MAX_DEVICES + 1:
+            # Create the new device
+            new_device = UE((0, 0))
+            new_device.set_coor_close()
+            # Set its image.
+            new_device.set_device_trying_to_connect()
+            # Add the new device to the list of devices
+            devices.append(new_device)
+
+    def far_distribution(self):
+        """Create MAX_DEVICES devices far from the antenna on the grid."""
+        pygame.display.set_caption("Far distribution")
+        while len(devices) < MAX_DEVICES + 1:
+            # Create the new device
+            new_device = UE((0, 0))
+            new_device.set_coor_far()
+            # Set its image.
+            new_device.set_device_trying_to_connect()
+            # Add the new device to the list of devices
+            devices.append(new_device)
+
+    def random_distribution(self):
+        """Create MAX_DEVICES devices randomly on the grid."""
+        pygame.display.set_caption("Random distribution")
+        while len(devices) < MAX_DEVICES + 1:
+            # Create the new device
+            new_device = UE((0, 0))
+            new_device.set_coor_random()
+            # Set its image.
+            new_device.set_device_trying_to_connect()
+            # Add the new device to the list of devices
+            devices.append(new_device)
 
     def open_loop(self):
         """Implementation of the open loop.
