@@ -2,8 +2,8 @@
 #-*-coding:utf-8 -*
 
 import os
-
 import copy
+
 import pygame
 from pygame.locals import *
 
@@ -26,8 +26,7 @@ stop = False
 # Initialize background image.
 background = pygame.image.load(PICTURE_PATH + BACKGROUND_SCALED_IMAGE).convert_alpha()
 # Place antenna at the very center.
-antenna = Antenna(
-    (ANTENNA_LOC_WIDTH,ANTENNA_LOC_HEIGHT))
+antenna = Antenna((ANTENNA_LOC_WIDTH, ANTENNA_LOC_HEIGHT))
 antenna.set_picture(PICTURE_PATH + ANTENNA_IMAGE)
 antenna.current_emitted_power = ANTENNA_EMITTED_POWER
 background.blit(antenna.current_picture, (antenna.abscisse, antenna.ordonnee))
@@ -60,8 +59,8 @@ while not stop:
             # keypad enter or enter
             elif event.key == K_KP_ENTER or K_RETURN:
                 # Update the selected item of the menu.
-                menu.select_menu(menu.menu_pointed)
                 worker.join()
+                menu.select_menu(menu.menu_pointed)
                 worker = Worker()
                 worker.start()
 
