@@ -13,51 +13,51 @@ class Menu_Item(object):
     # Default coord of the menu_item 1.
     x = MENU_ITEM_OFFSET_FROM_LEFT_RIGHT_PANEL_SIDE
     y = MENU_OFFSET_FROM_TOP_RIGHT_PANEL
-    # This object will contain the picture corresponding to a menu item not
+    # This object will contain the image corresponding to a menu item not
     # selected.
-    picture = 0
-    PicturePath_unsel  = ""
-    PicturePath_sel = ""
+    image = 0
+    image_path_unsel  = ""
+    image_path_sel = ""
     is_selected = False
 
     def __init__(self,
                  (width, height),
-                 PicturePath_unselected,
-                 PicturePath_selected):
+                 image_path_unselected,
+                 image_path_selected):
         self.x = width
         self.y = height
-        self.PicturePath_unsel = PicturePath_unselected
-        self.PicturePath_sel = PicturePath_selected
-        self.picture = pygame.image.load(
-            PicturePath_unselected)
+        self.image_path_unsel = image_path_unselected
+        self.image_path_sel = image_path_selected
+        self.image = pygame.image.load(
+            image_path_unselected)
 
     def select(self):
         """Set the right image to the menu item."""
-        self.picture.fill((0,0,0))
-        self.picture = pygame.image.load(self.PicturePath_sel)
+        self.image.fill((0,0,0))
+        self.image = pygame.image.load(self.image_path_sel)
         self.is_selected = True
 
     def unselect(self):
-        self.picture.fill((0,0,0))
-        self.picture = pygame.image.load(
-            self.PicturePath_unsel)
+        self.image.fill((0,0,0))
+        self.image = pygame.image.load(
+            self.image_path_unsel)
         self.is_selected = False
 
-    def change_picture_selected(self, PicturePath):
-        """Change pictures assigned to this item."""
-        self.picture.fill((0,0,0))
-        self.PicturePath_sel = PicturePath
+    def change_image_selected(self, image_path):
+        """Change images assigned to this item."""
+        self.image.fill((0,0,0))
+        self.image_path_sel = image_path
 
-    def change_picture_unselected(self, PicturePath):
-        self.picture.fill((0,0,0))
-        self.PicturePath_unsel = PicturePath
+    def change_image_unselected(self, image_path):
+        self.image.fill((0,0,0))
+        self.image_path_unsel = image_path
 
-    def reload_picture(self):
-        self.picture.fill((0,0,0))
+    def reload_image(self):
+        self.image.fill((0,0,0))
         if self.is_selected:
-            self.picture = pygame.image.load(PicturePath_sel)
+            self.image = pygame.image.load(image_path_sel)
         else :
-            self.picture = pygame.image.load(PicturePath_unsel)
+            self.image = pygame.image.load(image_path_unsel)
 
 
 class Menu(object):
@@ -125,7 +125,7 @@ class Menu(object):
             # Create the new device
             new_device = UE((0, 0))
             new_device.set_coor_close()
-            # Set its picture.
+            # Set its image.
             new_device.set_device_trying_to_connect()
             # Add the new device to the list of devices
             devices.append(new_device)
@@ -136,7 +136,7 @@ class Menu(object):
             # Create the new device
             new_device = UE((0, 0))
             new_device.set_coor_far()
-            # Set its picture.
+            # Set its image.
             new_device.set_device_trying_to_connect()
             # Add the new device to the list of devices
             devices.append(new_device)
@@ -147,7 +147,7 @@ class Menu(object):
             # Create the new device
             new_device = UE((0, 0))
             new_device.set_coor_random()
-            # Set its picture.
+            # Set its image.
             new_device.set_device_trying_to_connect()
             # Add the new device to the list of devices
             devices.append(new_device)
@@ -159,7 +159,7 @@ class Menu(object):
         # Load each image to the surface.
         for item in self.items:
             self.surface.blit(
-                item.picture,
+                item.image,
                 (item.x, item.y))
         # Load image of arrow selector beside the menu item selected.
         self.surface.blit(

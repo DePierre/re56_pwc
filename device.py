@@ -21,14 +21,14 @@ class Device(object):
         self.emitted_power = 0.0
         self.command = COMMAND_UP
         self.status = NOT_CONNECTED
-        # Object which will contain the picture descriptor assigned to the
+        # Object which will contain the image descriptor assigned to the
         # device.
-        self.picture = None
+        self.image = None
 
-    def set_picture(self, picturepath):
-        """To be used to assign the antenna picture
+    def set_image(self, imagepath):
+        """To be used to assign the antenna image
         """
-        self.picture = pygame.image.load(picturepath).convert_alpha()
+        self.image = pygame.image.load(imagepath).convert_alpha()
 
 
 class Antenna(Device):
@@ -136,13 +136,13 @@ class UE(Device):
         """
         self.command = COMMAND_UP
         if self.status == TRY_CONNECT:
-            self.picture = pygame.image.load(
+            self.image = pygame.image.load(
                 DEVICE_TRY_TO_CONNECT_UP_IMAGE).convert_alpha()
         elif self.status == CONNECTED:
-            self.picture = pygame.image.load(
+            self.image = pygame.image.load(
                 DEVICE_CONNECTED_UP_IMAGE).convert_alpha()
         else :
-            self.picture = pygame.image.load(
+            self.image = pygame.image.load(
                 DEVICE_DISCONNECTED_IMAGE).convert_alpha()
 
     def set_command_down(self):
@@ -153,13 +153,13 @@ class UE(Device):
         """
         self.command = COMMAND_DOWN
         if self.status == TRY_CONNECT:
-            self.picture = pygame.image.load(
+            self.image = pygame.image.load(
                 DEVICE_TRY_TO_CONNECT_DOWN_IMAGE).convert_alpha()
         elif self.status == CONNECTED:
-            self.picture = pygame.image.load(
+            self.image = pygame.image.load(
                 DEVICE_CONNECTED_DOWN_IMAGE).convert_alpha()
         else :
-            self.picture = pygame.image.load(
+            self.image = pygame.image.load(
                 DEVICE_DISCONNECTED_IMAGE).convert_alpha()
 
     def set_device_connected(self):
@@ -170,10 +170,10 @@ class UE(Device):
         """
         self.status = CONNECTED
         if self.command == COMMAND_UP:
-            self.picture = pygame.image.load(
+            self.image = pygame.image.load(
                 DEVICE_CONNECTED_UP_IMAGE).convert_alpha()
         else :
-            self.picture = pygame.image.load(
+            self.image = pygame.image.load(
                 DEVICE_CONNECTED_DOWN_IMAGE).convert_alpha()
 
     def set_device_trying_to_connect(self):
@@ -184,10 +184,10 @@ class UE(Device):
         """
         self.status = TRY_CONNECT
         if self.command == COMMAND_UP:
-            self.picture = pygame.image.load(
+            self.image = pygame.image.load(
                 DEVICE_TRY_TO_CONNECT_UP_IMAGE).convert_alpha()
         else :
-            self.picture = pygame.image.load(
+            self.image = pygame.image.load(
                 DEVICE_TRY_TO_CONNECT_DOWN_IMAGE).convert_alpha()
 
     def set_device_disconnected(self):
@@ -197,32 +197,32 @@ class UE(Device):
 
         """
         self.status = NOT_CONNECTED
-        self.picture = pygame.image.load(
+        self.image = pygame.image.load(
             DEVICE_DISCONNECTED_IMAGE
         ).convert_alpha()
 
     def reload(self):
-        """Reload the current picture.
+        """Reload the current image.
 
         According to connection status and current command.
 
         """
         if self.status == TRY_CONNECT:
             if self.command == COMMAND_UP:
-                self.picture = pygame.image.load(
+                self.image = pygame.image.load(
                     DEVICE_TRY_TO_CONNECT_UP_IMAGE
                 ).convert_alpha()
             else :
-                self.picture = pygame.image.load(
+                self.image = pygame.image.load(
                     DEVICE_TRY_TO_CONNECT_DOWN_IMAGE
                 ).convert_alpha()
         elif self.status == CONNECTED:
             if self.command == COMMAND_UP:
-                self.picture = pygame.image.load(
+                self.image = pygame.image.load(
                     DEVICE_CONNECTED_UP_IMAGE).convert_alpha()
             else :
-                self.picture = pygame.image.load(
+                self.image = pygame.image.load(
                     DEVICE_CONNECTED_DOWN_IMAGE).convert_alpha()
         else :
-            self.picture = pygame.image.load(
+            self.image = pygame.image.load(
                 DEVICE_DISCONNECTED_IMAGE).convert_alpha()

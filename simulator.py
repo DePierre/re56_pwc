@@ -34,7 +34,7 @@ class Simulator(object):
         self._menu = Menu()
         # Devices init.
         antenna = Antenna((ANTENNA_LOC_WIDTH, ANTENNA_LOC_HEIGHT))
-        antenna.set_picture(ANTENNA_IMAGE)
+        antenna.set_image(ANTENNA_IMAGE)
         devices.append(antenna)
         # Clock init
         self._clock = pygame.time.Clock()
@@ -61,7 +61,7 @@ class Simulator(object):
         self._bg = copy(self._bg_original)
         for device in devices:
             self._bg.blit(
-                device.picture,
+                device.image,
                 (device.x, device.y))
         self._window.blit(self._bg, (0, 0))
         self._window.blit(self._menu.surface, (GRID_WIDTH, 0))
