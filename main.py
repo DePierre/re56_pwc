@@ -61,6 +61,7 @@ while not stop:
             elif event.key == K_KP_ENTER or K_RETURN:
                 # Update the selected item of the menu.
                 menu.select_menu(menu.menu_pointed)
+                worker.join()
                 worker = Worker()
                 worker.start()
 

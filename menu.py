@@ -79,7 +79,7 @@ class Menu(object):
         PICTURE_PATH + ARROW_SELECTOR_IMAGE).convert_alpha()
     surface = pygame.image.load(
         PICTURE_PATH + RIGHT_PANEL_IMAGE).convert_alpha()
-    menu_pointed = MENU1_INDEX
+    menu_pointed = MENU3_INDEX
 
     def __init__(self):
         self.select_menu(MENU3_INDEX)
