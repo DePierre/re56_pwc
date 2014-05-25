@@ -4,12 +4,11 @@
 import os
 
 import copy
-import thread
-import workers
 import pygame
 from pygame.locals import *
 
 from shared_resources import devices
+from workers import Worker
 from constants import *
 
 pygame.init()
@@ -41,12 +40,10 @@ devices.append(antenna)
 # Initialize the menu and select the first menu item.
 menu = Menu()
 
-#initialize the worker thread
-try:
-    worker = thread.start_new_thread(workers.open_loop, ())
-except Exception as errtxt:
-    print errtxt
-    stop = True
+
+worker = Worker()
+worker.start()
+worker.join()
 
 
 # Waiting loop.
@@ -65,6 +62,9 @@ while not stop:
             elif event.key == K_KP_ENTER or K_RETURN:
                 # Update the selected item of the menu.
                 menu.select_menu(menu.menu_pointed)
+                worker = Worker()
+                worker.start()
+                worker.join()
 
     # Reload window
     tmp_background = copy.copy(background) # Reset tmp_background to initial background

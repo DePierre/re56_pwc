@@ -110,13 +110,13 @@ class Menu(object):
             devices.pop()
         if index == MENU1_INDEX:
             self.close_distribution()
-            pygame.display.set_caption("close distribution")
+            pygame.display.set_caption("Close distribution")
         elif index == MENU2_INDEX:
             self.far_distribution()
-            pygame.display.set_caption("far distribution")
+            pygame.display.set_caption("Far distribution")
         else:
             self.random_distribution()
-            pygame.display.set_caption("random distribution")
+            pygame.display.set_caption("Random distribution")
 
     def close_distribution(self):
         """Create MAX_DEVICES devices close to the antenna on the grid."""
