@@ -11,8 +11,8 @@ from device import UE
 
 class Menu_Item(object):
     # Default coord of the menu_item 1.
-    abscisse = MENU_ITEM_OFFSET_FROM_LEFT_RIGHT_PANEL_SIDE
-    ordonnee = MENU_OFFSET_FROM_TOP_RIGHT_PANEL
+    x = MENU_ITEM_OFFSET_FROM_LEFT_RIGHT_PANEL_SIDE
+    y = MENU_OFFSET_FROM_TOP_RIGHT_PANEL
     # This object will contain the picture corresponding to a menu item not
     # selected.
     picture = 0
@@ -24,8 +24,8 @@ class Menu_Item(object):
                  (width, height),
                  PicturePath_unselected,
                  PicturePath_selected):
-        self.abscisse = width
-        self.ordonnee = height
+        self.x = width
+        self.y = height
         self.PicturePath_unsel = PicturePath_unselected
         self.PicturePath_sel = PicturePath_selected
         self.picture = pygame.image.load(
@@ -160,13 +160,13 @@ class Menu(object):
         for item in self.items:
             self.surface.blit(
                 item.picture,
-                (item.abscisse, item.ordonnee))
+                (item.x, item.y))
         # Load image of arrow selector beside the menu item selected.
         self.surface.blit(
             self.arrow_selector, (
-                self.items[self.menu_pointed].abscisse +
+                self.items[self.menu_pointed].x +
                 ARROW_SELECTOR_WIDTH_OFFSET_FROM_MENU_ITEM,
-                self.items[self.menu_pointed].ordonnee +
+                self.items[self.menu_pointed].y +
                 ARROW_SELECTOR_HEIGHT_OFFSET_FROM_MENU_ITEM
             ))
 

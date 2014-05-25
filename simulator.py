@@ -62,7 +62,7 @@ class Simulator(object):
         for device in devices:
             self._bg.blit(
                 device.picture,
-                (device.abscisse, device.ordonnee))
+                (device.x, device.y))
         self._window.blit(self._bg, (0, 0))
         self._window.blit(self._menu.surface, (GRID_WIDTH, 0))
         pygame.display.flip()

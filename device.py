@@ -15,8 +15,8 @@ class Device(object):
 
     def __init__(self, (x, y)):
         self.mutex = Lock()
-        self.abscisse = x
-        self.ordonnee = y
+        self.x = x
+        self.y = y
         self.distance_from_antenna = 0.0
         self.emitted_power = 0.0
         self.command = COMMAND_UP
@@ -63,8 +63,8 @@ class UE(Device):
         corner of both device and antenna which corresponds to the direct
         coordinate of them.
         """
-        distance_x = abs(devices[0].abscisse - self.abscisse) * PIX_IN_METERS
-        distance_y = abs(devices[0].ordonnee - self.ordonnee) * PIX_IN_METERS
+        distance_x = abs(devices[0].x - self.x) * PIX_IN_METERS
+        distance_y = abs(devices[0].y - self.y) * PIX_IN_METERS
         return sqrt(pow(distance_x,2) + pow(distance_y,2))
 
     def set_coor_random(self):
@@ -76,12 +76,12 @@ class UE(Device):
             y_coor = random.randint(0, GRID_HEIGHT)
             y_coor -= y_coor % CELL_WIDTH
             # A mobile device cannot be onto the antenna
-            if (x_coor == devices[0].abscisse and
-                    y_coor == devices[0].ordonnee):
+            if (x_coor == devices[0].x and
+                    y_coor == devices[0].y):
                 continue
             break
-        self.abscisse = x_coor
-        self.ordonnee = y_coor
+        self.x = x_coor
+        self.y = y_coor
         self.distance_from_antenna = self.compute_distance_from_antenna()
 
     def set_coor_close(self):
@@ -94,16 +94,16 @@ class UE(Device):
             y_coor = random.randint(0, GRID_HEIGHT)
             y_coor -= y_coor % CELL_WIDTH
             # A mobile device cannot be onto the antenna
-            if (x_coor == devices[0].abscisse and
-                    y_coor == devices[0].ordonnee):
+            if (x_coor == devices[0].x and
+                    y_coor == devices[0].y):
                 continue
             # Circle: (x - a)^2 + (y - b)^2 = r^2
-            if ((x_coor - devices[0].abscisse) ** 2 +
-                    (y_coor - devices[0].ordonnee) ** 2 > MAX_DISTANCE ** 2):
+            if ((x_coor - devices[0].x) ** 2 +
+                    (y_coor - devices[0].y) ** 2 > MAX_DISTANCE ** 2):
                 continue
             break
-        self.abscisse = x_coor
-        self.ordonnee = y_coor
+        self.x = x_coor
+        self.y = y_coor
         self.distance_from_antenna = self.compute_distance_from_antenna()
 
     def set_coor_far(self):
@@ -116,16 +116,16 @@ class UE(Device):
             y_coor = random.randint(0, GRID_HEIGHT)
             y_coor -= y_coor % CELL_WIDTH
             # A mobile device cannot be onto the antenna
-            if (x_coor == devices[0].abscisse and
-                    y_coor == devices[0].ordonnee):
+            if (x_coor == devices[0].x and
+                    y_coor == devices[0].y):
                 continue
             # Circle: (x - a)^2 + (y - b)^2 = r^2
-            if ((x_coor - devices[0].abscisse) ** 2 +
-                    (y_coor - devices[0].ordonnee) ** 2 < MIN_DISTANCE ** 2):
+            if ((x_coor - devices[0].x) ** 2 +
+                    (y_coor - devices[0].y) ** 2 < MIN_DISTANCE ** 2):
                 continue
             break
-        self.abscisse = x_coor
-        self.ordonnee = y_coor
+        self.x = x_coor
+        self.y = y_coor
         self.distance_from_antenna = self.compute_distance_from_antenna()
 
     def set_command_up(self):
