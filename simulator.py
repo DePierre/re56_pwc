@@ -48,7 +48,10 @@ class Simulator(object):
                 self._menu.menu_previous()
             elif event.key == pygame.K_KP_ENTER or event.key == pygame.K_RETURN:
                 self._menu.select_menu(self._menu.menu_pointed)
-                self.open_loop()
+                try:
+                    self.open_loop()
+                except KeyboardInterrupt:
+                    self._running = False
             elif event.key == pygame.K_ESCAPE:
                 self._running = False
 
@@ -149,6 +152,8 @@ class Simulator(object):
         while i < MAX_PREAMBLE_CYCLE:
             # Iterates over the devices (but not the antenna)
             for device in self.ues:
+                prev_cmd = device.command
+                prev_status = device.status
                 # Increase PREAMBLE_RETRANS_MAX times
                 j = 0
                 while j < PREAMBLE_RETRANS_MAX:
@@ -161,32 +166,17 @@ class Simulator(object):
                         # If the current emitted power isn't sufficient then increase
                         # it by a step.
                         if device.emitted_power >= emitted_power_to_reach:
-                            prev_cmd = device.command
-                            prev_status = device.status
                             device.set_device_connected()
-                            # Only render if changed.
-                            if not (prev_cmd == device.command and
-                                    prev_status == device.status):
-                                self.on_render()
                         else:
                             if device.emitted_power < UE_MAX_EMITTED_POWER:
                                 device.emitted_power += POWER_CONTROL_STEP
-                                prev_cmd = device.command
-                                prev_status = device.status
                                 device.set_command_up()
-                                # Only render if changed.
-                                if not (prev_cmd == device.command and
-                                        prev_status == device.status):
-                                    self.on_render()
                             else:
-                                prev_cmd = device.command
-                                prev_status = device.status
                                 device.set_device_disconnected()
-                                # Only render if changed.
-                                if not (prev_cmd == device.command and
-                                        prev_status == device.status):
-                                    self.on_render()
                         j += 1
+                if not (prev_cmd == device.command and
+                        prev_status == device.status):
+                    self.on_render()
             i += 1
         for device in self.ues:
             if device.status != CONNECTED:
