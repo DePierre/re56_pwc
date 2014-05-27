@@ -131,7 +131,8 @@ class UE(Device):
 
     def set_command_up(self):
         """Set the command of the device to COMMAND_UP.
-
+        
+        Apply a step on the emitted power of this UE.
         Update the image assigned to the device.
 
         """
@@ -145,10 +146,12 @@ class UE(Device):
         else :
             self.image = pygame.image.load(
                 DEVICE_DISCONNECTED_IMAGE).convert_alpha()
+        self.emitted_power += POWER_CONTROL_STEP
 
     def set_command_down(self):
         """Set the command of the device to COMMAND_DOWN.
 
+        Apply a step on the emitted power of this UE.
         Update the image assigned to the device.
 
         """
@@ -162,6 +165,7 @@ class UE(Device):
         else :
             self.image = pygame.image.load(
                 DEVICE_DISCONNECTED_IMAGE).convert_alpha()
+        self.emitted_power -= POWER_CONTROL_STEP
 
     def set_device_connected(self):
         """Set the status of the device to CONNECTED.

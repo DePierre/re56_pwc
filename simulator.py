@@ -56,6 +56,36 @@ class Simulator(object):
                 self._running = False
 
     def on_loop(self):
+        """Implementation of the outer loop
+        
+        This loop is in charge of the computation of the BER. This BER is used
+        to set the target received power of the antenna from which the antenna
+        can take a decision about the command to send to the UE.
+        
+        This BER is obtained thanks to a table. This table contains the 
+        corresponding C/I for a specific BER.
+        From that we can obtain our BER from a computation of a C/I.
+        
+        This C/I is computed for each device as follows :
+        C/I = (Pm + Gm) / (∑(Gi + Pj) + TN)
+        
+        with : 
+            Pi emitted power of the mobile i
+            Gi gain of the mobile i
+            TN = thermal noise at the base station
+        the formula for the thermal noise is presented in one of the courses
+        from Nadine Malhouroux
+        
+        TODO : how do we keep the C/I information for each device ?
+        
+        """
+        
+        """ Implementation of the Inner loop
+        
+        This loop is in charge of sending the correct command to the UEs
+        according to the target from the outer loop.
+        
+        """
         pass
 
     def on_render(self):
