@@ -131,7 +131,7 @@ class UE(Device):
 
     def set_command_up(self):
         """Set the command of the device to COMMAND_UP.
-        
+
         Apply a step on the emitted power of this UE.
         Update the image assigned to the device.
 
