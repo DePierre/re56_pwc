@@ -201,7 +201,7 @@ class Simulator(object):
         From that we can obtain our BER from a computation of a C/I.
 
         This C/I is computed for each device as follows :
-        C/I = (Pm + Gm) / (∑(Gi + Pj) + TN)
+        C/I = (Pm + Gm) / (sum(Gi + Pj) + TN)
 
         with :
             Pi emitted power of the mobile i
