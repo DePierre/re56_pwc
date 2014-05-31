@@ -207,12 +207,27 @@ class Simulator(object):
             Pi emitted power of the mobile i
             Gi gain of the mobile i
             TN = thermal noise at the base station
-        the formula for the thermal noise is presented in one of the courses
-        from Nadine Malhouroux
-
+        
+        with : 
+        	TN=kTB
+			k : Boltzmann constant 1.3806504×10-23 J/K
+			T : Temperature in Kalvin here 290 °K (20 °C)
+			B : Bandwith in Hz 
+		
         TODO : how do we keep the C/I information for each device ?
-
+	
         """
+        for device in self.ues:
+        
+        	#temporary variable for C/I
+        	c_over_i = 0.00
+        	
+        	#compute C/I
+        	
+        	c_over_i = (device.power_emitted + UE_GAIN)/(self.compute_interference(self,device) + TEMPERATURE_IN_KALVIN * BOLTZMANN_CONSTANT * BANDWIDTH)
+        	
+        	#find the associated BLER and compare with target
+        	
         pass
 
     def inner_loop(self):
@@ -223,3 +238,50 @@ class Simulator(object):
 
         """
         pass
+        
+    #outer loop methods
+        
+	def compute_interference(self,device):
+		"""Interference computation for a given device in order to use it in
+		the C/I computation 
+		Interference noted I equals the sum of non targeted emission power 
+		received plus the thermal noise
+		Here the received power from others UE will be considered as the non 
+		targeted received power.
+		
+		A free space loss calculation will be done in order to estimate the 
+		received by each UE.
+
+		Iue= sum(Pi-FSL(ue,i)+Gi)
+		
+		with:
+			Pi: neighboor emitted power
+			FSL: free space loss (friis formula) between device and a neighboor
+			Gi: neighboor gain
+			
+		"""
+		
+		interference=0.00
+		
+		#compute received power from every neighboor device
+		
+		for neighboor in self.ues:
+			interference+=(neighboor.emitted_power - self.compute_free_space_loss(self,device,neighboor) + UE_GAIN)
+		return interference
+		
+	def compute_distance(device, neighboor):
+		"""compute the distance between two UE in order to compute the free 
+		space loss formula. 
+		"""
+        distance_x = abs(device.x - neighboor.x) * PIX_IN_METERS
+        distance_y = abs(device.y - neighboor.y) * PIX_IN_METERS
+        return sqrt(pow(distance_x,2) + pow(distance_y,2))
+        		
+	def compute_free_space_loss(self,device, neighboor):
+		"""compute the free space loss formula to determine the received power
+		from neighboor devices
+		
+		free space loss = 20*log10(F/1000) + 20*log10(distance(UE,EUi)
+		/1000) + 32.44
+		"""
+		return 20*log10(UMTS_FREQ/1000) + 20*log10(self.compute_distance(device,neighboor)/1000) + 32.44

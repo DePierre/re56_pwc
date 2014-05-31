@@ -56,6 +56,11 @@ UE_MIN_EMITTED_POWER = -11
 PREAMBLE_RETRANS_MAX = 8
 MAX_PREAMBLE_CYCLE = 4
 
+# Outer loop constants
+BOLTZMANN_CONSTANT = 1.3806504E-23
+TEMPERATURE_IN_KALVIN = 290
+BANDWIDTH = 2000000
+
 # For every constant defined hereafter 1 pixel unit will correspond to the
 # following value in meter
 PIX_IN_METERS = 1000000
