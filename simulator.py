@@ -153,6 +153,9 @@ class Simulator(object):
         while i < MAX_PREAMBLE_CYCLE:
             # Iterates over the devices (but not the antenna)
             for device in self.ues:
+                # If the device has already been initialized by its open_loop
+                if device.open_looped:
+                    continue
                 prev_cmd = device.command
                 prev_status = device.status
                 # Increase PREAMBLE_RETRANS_MAX times
