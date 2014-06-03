@@ -30,7 +30,17 @@ class Device(object):
         """To be used to assign the antenna image
         """
         self.image = pygame.image.load(imagepath).convert_alpha()
+        
+    def compute_distance(self, device, neighboor):
+        """Distance between two devices.
 
+        The distance is needed by the free space loss formula.
+
+        """
+        distance_x = abs(device.x - neighboor.x) * PIX_IN_METERS
+        distance_y = abs(device.y - neighboor.y) * PIX_IN_METERS
+        return sqrt(pow(distance_x,2) + pow(distance_y,2))
+        
 
 class Antenna(Device):
     """Antenna."""
@@ -39,7 +49,7 @@ class Antenna(Device):
         Device.__init__(self, (x, y))
         self.emitted_power = ANTENNA_EMITTED_POWER
         self.image = pygame.image.load(ANTENNA_IMAGE).convert_alpha()
-
+        self.target = 0.0
 
 class UE(Device):
     """User Equipment."""
@@ -47,7 +57,8 @@ class UE(Device):
     def __init__(self, (x, y), antenna):
         Device.__init__(self, (x, y))
         self.antenna = antenna
-        self.distance_from_antenna = self.compute_distance_from_antenna()
+        #self.distance_from_antenna = self.compute_distance_from_antenna()
+        self.distance_from_antenna = self.compute_distance(self, antenna)
         # Set the initial emitted power to the min.
         self.emitted_power = UE_MAX_EMITTED_POWER
         self.command = COMMAND_UP
@@ -85,7 +96,8 @@ class UE(Device):
             break
         self.x = x_coor
         self.y = y_coor
-        self.distance_from_antenna = self.compute_distance_from_antenna()
+        #self.distance_from_antenna = self.compute_distance_from_antenna()
+        self.distance_from_antenna = self.compute_distance(self, self.antenna)
 
     def set_coor_close(self):
         """Set coordinates close from the antenna."""
@@ -107,7 +119,8 @@ class UE(Device):
             break
         self.x = x_coor
         self.y = y_coor
-        self.distance_from_antenna = self.compute_distance_from_antenna()
+        #self.distance_from_antenna = self.compute_distance_from_antenna()
+        self.distance_from_antenna = self.compute_distance(self, self.antenna)
 
     def set_coor_far(self):
         """Set coordinates far from the antenna."""
@@ -129,7 +142,8 @@ class UE(Device):
             break
         self.x = x_coor
         self.y = y_coor
-        self.distance_from_antenna = self.compute_distance_from_antenna()
+        #self.distance_from_antenna = self.compute_distance_from_antenna()
+        self.distance_from_antenna = self.compute_distance(self, self.antenna)
 
     def set_command_up(self):
         """Set the command of the device to COMMAND_UP.
