@@ -57,8 +57,8 @@ MAX_PREAMBLE_CYCLE = 4
 
 # Outer loop constants
 BOLTZMANN_CONSTANT = 1.3806504E-23
-TEMPERATURE_IN_KALVIN = 290
-BANDWIDTH = 5000000
+TEMPERATURE_IN_KELVIN = 290
+BANDWIDTH = 5000000 #UMTS bandwidth is 5MHz
 
 # For every constant defined hereafter 1 pixel unit will correspond to the
 # following value in meter

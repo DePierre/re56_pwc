@@ -218,7 +218,7 @@ class Simulator(object):
             c_over_i = (
                 (device.power_emitted + UE_GAIN) / (
                     self.compute_interference(self,device) +
-                    TEMPERATURE_IN_KALVIN * BOLTZMANN_CONSTANT *
+                    TEMPERATURE_IN_KELVIN * BOLTZMANN_CONSTANT *
                     BANDWIDTH)
                 )
             # TODO: Find the associated BLER and compare with target.
