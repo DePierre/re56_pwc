@@ -217,7 +217,7 @@ class Simulator(object):
             # Compute C/I.
             c_over_i = (
                 (device.power_emitted + UE_GAIN) / (
-                    self.compute_interference(self,device) +
+                    self.compute_interference(device) +
                     TEMPERATURE_IN_KELVIN * BOLTZMANN_CONSTANT *
                     BANDWIDTH)
                 )
@@ -242,7 +242,7 @@ class Simulator(object):
         targeted received power.
 
         A free space loss calculation will be done in order to estimate the
-        received by each UE.
+        power received by each UE.
 
         Iue= sum(Pi-FSL(ue,i)+Gi)
 
@@ -257,7 +257,7 @@ class Simulator(object):
         for neighboor in self.ues:
             interference += (
                 neighboor.emitted_power -
-                self.compute_free_space_loss(self,device,neighboor) +
+                self.compute_free_space_loss(device,neighboor) +
                 UE_GAIN)
         return interference
 
@@ -278,6 +278,6 @@ class Simulator(object):
         /1000) + 32.44
 
         """
-        return 20 * log10(UMTS_FREQ/1000) + 20 * log10(
-            self.compute_distance(device,neighboor) / 1000
-            ) + 32.44
+        return 20 * log10(UMTS_FREQ) + 20 * log10(
+            self.compute_distance(device,neighboor)
+            ) - 27.55
