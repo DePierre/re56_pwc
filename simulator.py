@@ -239,7 +239,7 @@ class Simulator(object):
         for device in self.ues:
             # Compute C/I.
             c_over_i = (
-                (device.emitted_power + UE_GAIN) / (
+                (10**((device.emitted_power + UE_GAIN - 30)/10)) / (
                     self.compute_interference(device) +
                     TEMPERATURE_IN_KELVIN * BOLTZMANN_CONSTANT *
                     BANDWIDTH)
@@ -294,6 +294,8 @@ class Simulator(object):
                 neighboor.emitted_power -
                 self.compute_free_space_loss(device,neighboor) +
                 UE_GAIN)
+        # Convert interference from dBm to W
+        interference = 10**((interference - 30)/10)
         return interference
 
     def compute_free_space_loss(self, device, neighboor):
