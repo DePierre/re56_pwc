@@ -59,7 +59,7 @@ class Simulator(object):
     def on_loop(self):
         pass
 
-    def on_render(self):	    
+    def on_render(self):
         self._bg = copy(self._bg_original)
         self._bg.blit(
             self.antenna.image,
@@ -296,16 +296,6 @@ class Simulator(object):
                 UE_GAIN)
         return interference
 
-    def compute_distance(self, device, neighboor):
-        """Distance between two devices.
-
-        The distance is needed by the free space loss formula.
-
-        """
-        distance_x = abs(device.x - neighboor.x) * PIX_IN_METERS
-        distance_y = abs(device.y - neighboor.y) * PIX_IN_METERS
-        return sqrt(pow(distance_x,2) + pow(distance_y,2))
-
     def compute_free_space_loss(self, device, neighboor):
         """Compute the free space loss between two devices.
 
@@ -314,5 +304,5 @@ class Simulator(object):
 
         """
         return 20 * log10(UMTS_FREQ) + 20 * FRIIS_OBSTACLE_CONSTANT * log10(
-            self.compute_distance(device,neighboor)
+            device.compute_distance(neighboor)
             ) - 27.55
