@@ -50,7 +50,7 @@ class Simulator(object):
             elif event.key == pygame.K_KP_ENTER or event.key == pygame.K_RETURN:
                 self._menu.select_menu(self._menu.menu_pointed)
                 try:
-                    self.open_loop()
+                    self.start()
                 except KeyboardInterrupt:
                     self._running = False
             elif event.key == pygame.K_ESCAPE:
@@ -86,6 +86,11 @@ class Simulator(object):
             self.on_loop()
             self.on_render()
         self.on_cleanup()
+
+    def start(self):
+        """Start the simulation according to the distribution scenario."""
+        # First start the open loop process.
+        self.open_loop()
 
     def close_distribution(self):
         """Create MAX_DEVICES devices close to the antenna on the grid."""
