@@ -3,7 +3,7 @@ import pygame
 from pygame.locals import *
 
 from copy import copy
-from math import log10
+from math import log10, sqrt
 
 from constants import *
 from device import Antenna, UE
@@ -180,6 +180,7 @@ class Simulator(object):
                     self.on_render()
             i += 1
         for device in self.ues:
+            device.open_looped = True
             if device.status != CONNECTED:
                 prev_cmd = device.command
                 prev_status = device.status
@@ -261,7 +262,7 @@ class Simulator(object):
                 UE_GAIN)
         return interference
 
-    def compute_distance(device, neighboor):
+    def compute_distance(self, device, neighboor):
         """Distance between two devices.
 
         The distance is needed by the free space loss formula.
