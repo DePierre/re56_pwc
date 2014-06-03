@@ -160,7 +160,7 @@ class Simulator(object):
                 while j < PREAMBLE_RETRANS_MAX:
                     with device.mutex:
                         # computation of the free space path loss.
-                        free_space_loss = 20*log10(UMTS_FREQ) + 20*log10(device.distance_from_antenna) -27.55
+                        free_space_loss = 20*log10(UMTS_FREQ) + 20*FRIIS_OBSTACLE_CONSTANT*log10(device.distance_from_antenna) -27.55
                         # Computation of the emitted power to reach to be sure the
                         # NodeB will receive the signal.
                         emitted_power_to_reach = ANTENNA_SENSITIVITY - ANTENNA_GAIN - UE_GAIN + free_space_loss
@@ -278,6 +278,6 @@ class Simulator(object):
         /1000) + 32.44
 
         """
-        return 20 * log10(UMTS_FREQ) + 20 * log10(
+        return 20 * log10(UMTS_FREQ) + 20 * FRIIS_OBSTACLE_CONSTANT * log10(
             self.compute_distance(device,neighboor)
             ) - 27.55

@@ -59,10 +59,13 @@ MAX_PREAMBLE_CYCLE = 4
 BOLTZMANN_CONSTANT = 1.3806504E-23
 TEMPERATURE_IN_KELVIN = 290
 BANDWIDTH = 5000000 #UMTS bandwidth is 5MHz
+# This constants is used to define a variant of the friis formula taking into
+# account the obstacles existing between Tx and Rx
+FRIIS_OBSTACLE_CONSTANT = 1.3
 
 # For every constant defined hereafter 1 pixel unit will correspond to the
 # following value in meter
-PIX_IN_METERS = 1000
+PIX_IN_METERS = 25
 
 # Size in pixels of the main window.
 MAIN_WINDOW_HEIGHT = 720  # Max which could be used: 1366 x 768 screen (16:9).
