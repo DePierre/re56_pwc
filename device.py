@@ -18,6 +18,8 @@ class Device(object):
         self.y = y
         self.distance_from_antenna = 0.0
         self.emitted_power = 0.0
+        self.open_looped = False
+        self.snr = 0
         self.command = COMMAND_UP
         self.status = NOT_CONNECTED
         # Object which will contain the image descriptor assigned to the
