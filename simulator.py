@@ -141,7 +141,7 @@ class Simulator(object):
         B we can compute the initial emitted power to use with this UE .
 
         Reminder :
-            Friis Formula : Pr = Pe + Ge + Gr - (20log(f) + 20log(d in km) + 32.44)
+            Friis Formula : Pr = Pe + Ge + Gr - (20log(f in MHz) + 20log(d in m) - 27.55)
             with Pr, Pe, Gr, Ge in dB
 
             Since the gains are null the free space loss corresponds to the part
@@ -160,7 +160,7 @@ class Simulator(object):
                 while j < PREAMBLE_RETRANS_MAX:
                     with device.mutex:
                         # computation of the free space path loss.
-                        free_space_loss = 20*log10(UMTS_FREQ/1000) + 20*log10(device.distance_from_antenna/1000) + 32.44
+                        free_space_loss = 20*log10(UMTS_FREQ) + 20*log10(device.distance_from_antenna) -27.55
                         # Computation of the emitted power to reach to be sure the
                         # NodeB will receive the signal.
                         emitted_power_to_reach = ANTENNA_SENSITIVITY - ANTENNA_GAIN - UE_GAIN + free_space_loss
@@ -202,7 +202,7 @@ class Simulator(object):
 
         This C/I is computed for each device as follows :
         C/I = (Pm + Gm) / (sum(Gi + Pj) + TN)
-
+        TN can be neglicted in our case !
         With :
             Pi emitted power of the mobile i
             Gi gain of the mobile i
@@ -211,8 +211,6 @@ class Simulator(object):
                 k : Boltzmann constant 1.3806504×10-23 J/K
                 T : Temperature in Kalvin here 290 °K (20 °C)
                 B : Bandwith in Hz
-
-        TODO : how do we keep the C/I information for each device ?
 
         """
         for device in self.ues:
