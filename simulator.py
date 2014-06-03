@@ -234,7 +234,17 @@ class Simulator(object):
         according to the target from the outer loop.
 
         """
-        pass
+        for device in self.ues:
+            # Compute the received power
+            fsl = 20 * log10(UMTS_FREQ) + 20 * FRIIS_OBSTACLE_CONSTANT * log10(
+            device.distance_from_antenna
+            ) - 27.55
+            received_power = device.emitted_power - fsl
+            # If the received power is under the target then send command up
+            if received_power < self.antenna.target:
+                device.set_command_up()
+            else:
+                device.set_command_down()
 
     def compute_interference(self, device):
         """Interference computation for a given device.
