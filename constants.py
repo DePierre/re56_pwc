@@ -32,25 +32,24 @@ DEVICE_DISCONNECTED_IMAGE = PICTURE_PATH + "disconnected.png"
 MAX_DEVICES = 100
 
 # UMTS frequency in MHz
-UMTS_FREQ = 1900
+UMTS_FREQ = 2200
 
 # Antenna and UE gain in dB
 ANTENNA_GAIN = 0
 UE_GAIN = 0
 
 # Receivers sensitivity in dBm
-ANTENNA_SENSITIVITY = -121
-UE_SENSITIVITY = -117
+ANTENNA_SENSITIVITY = -120
+UE_SENSITIVITY = -100
 
 # Power control steps in dB
 POWER_CONTROL_STEP = 1
 
 # Antenna emitted powerin dBm
-ANTENNA_EMITTED_POWER = 50.0
+ANTENNA_EMITTED_POWER = 20.0
 
 # UE max & min emitted power in dBm
-UE_MAX_EMITTED_POWER = 21
-UE_MIN_EMITTED_POWER = -11
+UE_MAX_EMITTED_POWER = 20
 
 # Open loop constants
 PREAMBLE_RETRANS_MAX = 8
@@ -59,11 +58,11 @@ MAX_PREAMBLE_CYCLE = 4
 # Outer loop constants
 BOLTZMANN_CONSTANT = 1.3806504E-23
 TEMPERATURE_IN_KALVIN = 290
-BANDWIDTH = 2000000
+BANDWIDTH = 5000000
 
 # For every constant defined hereafter 1 pixel unit will correspond to the
 # following value in meter
-PIX_IN_METERS = 1000000
+PIX_IN_METERS = 1000
 
 # Size in pixels of the main window.
 MAIN_WINDOW_HEIGHT = 720  # Max which could be used: 1366 x 768 screen (16:9).
