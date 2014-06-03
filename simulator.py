@@ -141,7 +141,7 @@ class Simulator(object):
         B we can compute the initial emitted power to use with this UE .
 
         Reminder :
-            Friis Formula : Pr = Pe + Ge + Gr - (20log(f in MHz) + 20log(d in m) - 27.55)
+            Friis Formula : Pr = Pe + Ge + Gr - (20log(f in MHz) + 20Nlog(d in m) - 27.55)
             with Pr, Pe, Gr, Ge in dB
 
             Since the gains are null the free space loss corresponds to the part
@@ -275,8 +275,8 @@ class Simulator(object):
     def compute_free_space_loss(self, device, neighboor):
         """Compute the free space loss between two devices.
 
-        free space loss = 20*log10(F/1000) + 20*log10(distance(UE,EUi)
-        /1000) + 32.44
+        free space loss = 20*log10(F in MHz) + 20*N*log10(distance(UE,EUi)
+        /1000) - 27.55
 
         """
         return 20 * log10(UMTS_FREQ) + 20 * FRIIS_OBSTACLE_CONSTANT * log10(
