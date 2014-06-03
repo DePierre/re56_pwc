@@ -59,7 +59,7 @@ class Simulator(object):
     def on_loop(self):
         pass
 
-    def on_render(self):
+    def on_render(self):	    
         self._bg = copy(self._bg_original)
         self._bg.blit(
             self.antenna.image,

@@ -81,6 +81,11 @@ class Menu(object):
     def __init__(self, simulator):
         self.simu = simulator
         self.init = False
+         # Display some text
+        font = pygame.font.Font(None, 18)
+        self.resolution = font.render("Resolution : " + str(PIX_IN_METERS) + " meters", 1, (255, 255, 255))
+        #textpos = text.get_rect()
+        #textpos.centerx = background.get_rect().centerx
         self.select_menu(MENU3_INDEX)
 
     def select_menu(self, index):
@@ -114,6 +119,7 @@ class Menu(object):
         """Reload each image of menu."""
         self.surface.fill((0,0,0))
         self.surface = pygame.image.load(RIGHT_PANEL_IMAGE)
+        self.surface.blit(self.resolution, (300, 700))
         # Load each image to the surface.
         for item in self.items:
             self.surface.blit(
