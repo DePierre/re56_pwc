@@ -91,15 +91,22 @@ class Simulator(object):
         """Start the simulation according to the distribution scenario."""
         # First start the open loop process.
         self.open_loop()
+        # Then the outer loop.
+        self.outer_loop()
 
     def close_distribution(self):
         """Create MAX_DEVICES devices close to the antenna on the grid."""
         pygame.display.set_caption("Close distribution")
+        coors = []
         self.ues = []
         while len(self.ues) < MAX_DEVICES + 1:
             # Create the new device
             new_device = UE((0, 0), self.antenna)
-            new_device.set_coor_close()
+            while True:
+                new_device.set_coor_close()
+                if not (new_device.x, new_device.y) in coors:
+                    break
+            coors.append((new_device.x, new_device.y))
             # Set its image.
             new_device.set_device_trying_to_connect()
             # Add the new device to the list of devices
@@ -108,11 +115,16 @@ class Simulator(object):
     def far_distribution(self):
         """Create MAX_DEVICES devices far from the antenna on the grid."""
         pygame.display.set_caption("Far distribution")
+        coors = []
         self.ues = []
         while len(self.ues) < MAX_DEVICES + 1:
             # Create the new device
             new_device = UE((0, 0), self.antenna)
-            new_device.set_coor_far()
+            while True:
+                new_device.set_coor_far()
+                if not (new_device.x, new_device.y) in coors:
+                    break
+            coors.append((new_device.x, new_device.y))
             # Set its image.
             new_device.set_device_trying_to_connect()
             # Add the new device to the list of devices
@@ -121,11 +133,16 @@ class Simulator(object):
     def random_distribution(self):
         """Create MAX_DEVICES devices randomly on the grid."""
         pygame.display.set_caption("Random distribution")
+        coors = []
         self.ues = []
         while len(self.ues) < MAX_DEVICES + 1:
             # Create the new device
             new_device = UE((0, 0), self.antenna)
-            new_device.set_coor_random()
+            while True:
+                new_device.set_coor_random()
+                if not (new_device.x, new_device.y) in coors:
+                    break
+            coors.append((new_device.x, new_device.y))
             # Set its image.
             new_device.set_device_trying_to_connect()
             # Add the new device to the list of devices
@@ -158,9 +175,6 @@ class Simulator(object):
         while i < MAX_PREAMBLE_CYCLE:
             # Iterates over the devices (but not the antenna)
             for device in self.ues:
-                # If the device has already been initialized by its open_loop
-                if device.open_looped:
-                    continue
                 prev_cmd = device.command
                 prev_status = device.status
                 # Increase PREAMBLE_RETRANS_MAX times
@@ -225,7 +239,7 @@ class Simulator(object):
         for device in self.ues:
             # Compute C/I.
             c_over_i = (
-                (device.power_emitted + UE_GAIN) / (
+                (device.emitted_power + UE_GAIN) / (
                     self.compute_interference(device) +
                     TEMPERATURE_IN_KELVIN * BOLTZMANN_CONSTANT *
                     BANDWIDTH)
@@ -264,6 +278,8 @@ class Simulator(object):
         interference = .0
         # Compute received power from every neighboor device.
         for neighboor in self.ues:
+            if device == neighboor:
+                continue
             interference += (
                 neighboor.emitted_power -
                 self.compute_free_space_loss(device,neighboor) +
