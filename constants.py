@@ -29,7 +29,7 @@ DEVICE_TRY_TO_CONNECT_DOWN_IMAGE = PICTURE_PATH + "try_down.png"
 DEVICE_DISCONNECTED_IMAGE = PICTURE_PATH + "disconnected.png"
 
 # Maximum number of devices
-MAX_DEVICES = 100
+MAX_DEVICES = 20
 
 # UMTS frequency in MHz
 UMTS_FREQ = 2200
@@ -39,17 +39,18 @@ ANTENNA_GAIN = 0
 UE_GAIN = 0
 
 # Receivers sensitivity in dBm
-ANTENNA_SENSITIVITY = -120
+ANTENNA_SENSITIVITY = -110
 UE_SENSITIVITY = -100
 
 # Power control steps in dB
 POWER_CONTROL_STEP = 1
 
 # Antenna emitted powerin dBm
-ANTENNA_EMITTED_POWER = 20.0
+ANTENNA_EMITTED_POWER = 50.0
 
 # UE max & min emitted power in dBm
 UE_MAX_EMITTED_POWER = 20
+UE_MIN_EMITTED_POWER = 0
 
 # Open loop constants
 PREAMBLE_RETRANS_MAX = 8
@@ -63,9 +64,9 @@ BANDWIDTH = 5000000 #UMTS bandwidth is 5MHz
 # account the obstacles existing between Tx and Rx
 FRIIS_OBSTACLE_CONSTANT = 1.3
 
-# For every constant defined hereafter 1 pixel unit will correspond to the
-# following value in meter
-PIX_IN_METERS = 25
+# Resolution of a cell of the grid in meters.
+# The cell dimension is CELL_RES x CELL_RES
+CELL_RES = 200
 
 # Size in pixels of the main window.
 MAIN_WINDOW_HEIGHT = 720  # Max which could be used: 1366 x 768 screen (16:9).
@@ -73,8 +74,13 @@ MAIN_WINDOW_WIDTH = 1220
 GRID_HEIGHT = MAIN_WINDOW_HEIGHT
 GRID_WIDTH = GRID_HEIGHT
 
-CELL_HEIGHT = 20  # Pixels.
-CELL_WIDTH = 20  # Pixels.
+CELL_HEIGHT = 20.0  # Pixels.
+CELL_WIDTH = 20.0  # Pixels.
+
+# 1 pixel unit will correspond to the following value in meter
+PIX_IN_METERS = CELL_RES / CELL_HEIGHT
+
+
 
 # Antenna location
 ANTENNA_LOC_HEIGHT = GRID_HEIGHT / 2 - CELL_HEIGHT

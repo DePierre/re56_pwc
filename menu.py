@@ -83,7 +83,7 @@ class Menu(object):
         self.init = False
          # Display some text
         font = pygame.font.Font(None, 18)
-        self.resolution = font.render("Resolution : " + str(PIX_IN_METERS) + " meters", 1, (255, 255, 255))
+        self.resolution = font.render("1 Squarre : " + str(CELL_RES) + "x" + str(CELL_RES) + " meters", 1, (255, 255, 255))
         #textpos = text.get_rect()
         #textpos.centerx = background.get_rect().centerx
         self.select_menu(MENU3_INDEX)

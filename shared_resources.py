@@ -1,6 +1,6 @@
-# BER to C/I table
-# This table gives us a corresponding BER from a C/I computed
-# This is defined as a list of tuples (BER,C/I) in (%,dB)
+# BLER to C/I table
+# This table gives us a corresponding BLER from a C/I computed
+# This is defined as a list of tuples (BLER,C/I) in (%,dB)
 table = {
     0: 100,  # SNR = 0 => 100% loss
     1: 100,

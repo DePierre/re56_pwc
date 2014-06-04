@@ -238,12 +238,17 @@ class Simulator(object):
         """
         for device in self.ues:
             # Compute C/I.
-            c_over_i = (
-                (10**((device.emitted_power + UE_GAIN - 30)/10)) / (
-                    self.compute_interference(device) +
-                    TEMPERATURE_IN_KELVIN * BOLTZMANN_CONSTANT *
-                    BANDWIDTH)
-                )
+            print "-------- outer_loop --------"
+            print "dev ep (dBm): ", device.emitted_power + UE_GAIN
+            print "dev ep (W): ", (10**((device.emitted_power + UE_GAIN - 30)/10))
+            print "FSL for dist = " + str(device.compute_distance(self.antenna)) + " : " +  str(self.compute_free_space_loss(self.antenna,device))
+            print "RxLev (dBm): ", device.emitted_power + UE_GAIN + ANTENNA_GAIN - self.compute_free_space_loss(self.antenna,device)
+            print "TOT intereferences (W): ", self.compute_interference(device)
+            
+            c_over_i = ( 10**((device.emitted_power + UE_GAIN + ANTENNA_GAIN - self.compute_free_space_loss(self.antenna,device) - 30)/10) )/ self.compute_interference(device)
+            device.snr = 10 * log10(c_over_i)
+            print "SNR (dB): ", device.snr
+            print ""
             # TODO: Find the associated BLER and compare with target.
         pass
 
@@ -290,12 +295,8 @@ class Simulator(object):
         for neighboor in self.ues:
             if device == neighboor:
                 continue
-            interference += (
-                neighboor.emitted_power -
-                self.compute_free_space_loss(device,neighboor) +
-                UE_GAIN)
-        # Convert interference from dBm to W
-        interference = 10**((interference - 30)/10)
+            if neighboor.emitted_power - self.compute_free_space_loss(self.antenna,neighboor) + UE_GAIN >= ANTENNA_SENSITIVITY:
+                interference += 10**((neighboor.emitted_power - self.compute_free_space_loss(self.antenna,neighboor) + UE_GAIN-30)/10)
         return interference
 
     def compute_free_space_loss(self, device, neighboor):
