@@ -238,19 +238,20 @@ class Simulator(object):
         """
         for device in self.ues:
             # Compute C/I.
-            print "-------- outer_loop --------"
-            print "dev ep (dBm): ", device.emitted_power + UE_GAIN
-            print "dev ep (W): ", (10**((device.emitted_power + UE_GAIN - 30)/10))
-            print "FSL for dist = " + str(device.compute_distance(self.antenna)) + " : " +  str(self.compute_free_space_loss(self.antenna,device))
-            print "RxLev (dBm): ", device.emitted_power + UE_GAIN + ANTENNA_GAIN - self.compute_free_space_loss(self.antenna,device)
-            print "TOT intereferences (W): ", self.compute_interference(device)
-            
-            c_over_i = ( 10**((device.emitted_power + UE_GAIN + ANTENNA_GAIN - self.compute_free_space_loss(self.antenna,device) - 30)/10) )/ self.compute_interference(device)
-            device.snr = 10 * log10(c_over_i)
-            print "SNR (dB): ", device.snr
-            print ""
-            # TODO: Find the associated BLER and compare with target.
-        pass
+            if device.emitted_power + UE_GAIN + ANTENNA_GAIN - self.compute_free_space_loss(self.antenna,device) >= ANTENNA_SENSITIVITY:
+                print "-------- outer_loop --------"
+                print "Dist (m): ", str(device.compute_distance(self.antenna))
+                print "FSL : ", str(self.compute_free_space_loss(self.antenna,device))
+                print "RxLev (dBm): ", device.emitted_power + UE_GAIN + ANTENNA_GAIN - self.compute_free_space_loss(self.antenna,device)
+                print "RxLev (W): ", 10**((device.emitted_power + UE_GAIN + ANTENNA_GAIN - self.compute_free_space_loss(self.antenna,device) -30)/10)
+                print "TOT intereferences (W): ", self.compute_interference(device)
+                
+                c_over_i = ( 10**((device.emitted_power + UE_GAIN + ANTENNA_GAIN - self.compute_free_space_loss(self.antenna,device) - 30)/10) )/ self.compute_interference(device)
+                device.snr = 10 * log10(c_over_i)
+                print "SNR : ", c_over_i
+                print "SNR (dB): ", device.snr
+                print ""
+                # TODO: Find the associated BLER and compare with target.
 
     def inner_loop(self):
         """Implementation of the Inner loop.

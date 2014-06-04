@@ -29,7 +29,7 @@ DEVICE_TRY_TO_CONNECT_DOWN_IMAGE = PICTURE_PATH + "try_down.png"
 DEVICE_DISCONNECTED_IMAGE = PICTURE_PATH + "disconnected.png"
 
 # Maximum number of devices
-MAX_DEVICES = 20
+MAX_DEVICES = 150
 
 # UMTS frequency in MHz
 UMTS_FREQ = 2200
