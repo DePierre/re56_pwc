@@ -181,22 +181,38 @@ class Simulator(object):
             between parenthesis.
 
         """
-        # Retry MAX_PREAMBLE_CYCLE times before considering the UE connected or not
-        i = 0
-        while i < MAX_PREAMBLE_CYCLE:
-            # Iterates over the devices (but not the antenna)
-            for device in self.ues:
+        # Iterates over the devices (but not the antenna)
+        for device in self.ues:
+            # Computation of initial emitted_power for the device
+            # Compute RxLev
+            RxLevNodeB = self.antenna.emitted_power + UE_GAIN + ANTENNA_GAIN - (20*log10(UMTS_FREQ)+20*(FRIIS_OBSTACLE_CONSTANT+0.1)*log10(device.distance_from_antenna) - 27.55)
+            # Compute the new distance covered by UE's signal
+            new_distance = 10**( (-RxLevNodeB + self.antenna.emitted_power + UE_GAIN + ANTENNA_GAIN - 20 * log10(UMTS_FREQ) + 27.55)/(20*FRIIS_OBSTACLE_CONSTANT) )
+            # Set the initial UE's Ep
+            initial_ep = ANTENNA_SENSITIVITY - UE_GAIN - ANTENNA_GAIN + 20*log10(UMTS_FREQ) + 20*FRIIS_OBSTACLE_CONSTANT*log10(device.distance_from_antenna) - 27.55
+            if initial_ep <= UE_MAX_EMITTED_POWER:
+                device.emitted_power = initial_ep
+            else :
+                device.emitted_power = UE_MAX_EMITTED_POWER
+            # Compute the UE's Ep to reach to be connected
+            emitted_power_to_reach = ANTENNA_SENSITIVITY - UE_GAIN - ANTENNA_GAIN + 20*log10(UMTS_FREQ) + 20*FRIIS_OBSTACLE_CONSTANT*log10(new_distance) - 27.55
+            
+            print "------ new device ------"
+            print "UE Ep (dBm) : ", device.emitted_power
+            print "UE shortest path (m) : ", device.distance_from_antenna
+            print "UE real path (m) : ", new_distance
+            print "Ep to reach (dBm) : ", emitted_power_to_reach
+            print ""
+            
+            # Retry MAX_PREAMBLE_CYCLE times before considering the UE connected or not
+            i = 0
+            while i < MAX_PREAMBLE_CYCLE:            
                 prev_cmd = device.command
                 prev_status = device.status
                 # Increase PREAMBLE_RETRANS_MAX times
                 j = 0
                 while j < PREAMBLE_RETRANS_MAX:
                     with device.mutex:
-                        # computation of the free space path loss.
-                        free_space_loss = 20*log10(UMTS_FREQ) + 20*FRIIS_OBSTACLE_CONSTANT*log10(device.distance_from_antenna) -27.55
-                        # Computation of the emitted power to reach to be sure the
-                        # NodeB will receive the signal.
-                        emitted_power_to_reach = ANTENNA_SENSITIVITY - ANTENNA_GAIN - UE_GAIN + free_space_loss
                         # If the current emitted power isn't sufficient then increase
                         # it by a step.
                         if device.emitted_power >= emitted_power_to_reach:
@@ -211,7 +227,7 @@ class Simulator(object):
                 if not (prev_cmd == device.command and
                         prev_status == device.status):
                     self.on_render()
-            i += 1
+                i += 1
         for device in self.ues:
             device.open_looped = True
             if device.status != CONNECTED:
@@ -250,18 +266,18 @@ class Simulator(object):
         for device in self.ues:
             # Compute C/I.
             if device.emitted_power + UE_GAIN + ANTENNA_GAIN - self.compute_free_space_loss(self.antenna,device) >= ANTENNA_SENSITIVITY:
-                print "-------- outer_loop --------"
-                print "Dist (m): ", str(device.compute_distance(self.antenna))
-                print "FSL : ", str(self.compute_free_space_loss(self.antenna,device))
-                print "RxLev (dBm): ", device.emitted_power + UE_GAIN + ANTENNA_GAIN - self.compute_free_space_loss(self.antenna,device)
-                print "RxLev (W): ", 10**((device.emitted_power + UE_GAIN + ANTENNA_GAIN - self.compute_free_space_loss(self.antenna,device) -30)/10)
-                print "TOT intereferences (W): ", self.compute_interference(device)
+                #print "-------- outer_loop --------"
+                #print "Dist (m): ", str(device.compute_distance(self.antenna))
+                #print "FSL : ", str(self.compute_free_space_loss(self.antenna,device))
+                #print "RxLev (dBm): ", device.emitted_power + UE_GAIN + ANTENNA_GAIN - self.compute_free_space_loss(self.antenna,device)
+                #print "RxLev (W): ", 10**((device.emitted_power + UE_GAIN + ANTENNA_GAIN - self.compute_free_space_loss(self.antenna,device) -30)/10)
+                #print "TOT intereferences (W): ", self.compute_interference(device)
                 
                 c_over_i = ( 10**((device.emitted_power + UE_GAIN + ANTENNA_GAIN - self.compute_free_space_loss(self.antenna,device) - 30)/10) )/ self.compute_interference(device)
                 device.snr = 10 * log10(c_over_i)
-                print "SNR : ", c_over_i
-                print "SNR (dB): ", device.snr
-                print ""
+                #print "SNR : ", c_over_i
+                #print "SNR (dB): ", device.snr
+                #print ""
                 # TODO: Find the associated BLER and compare with target.
 
     def inner_loop(self):

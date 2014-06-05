@@ -49,8 +49,7 @@ POWER_CONTROL_STEP = 1
 ANTENNA_EMITTED_POWER = 50.0
 
 # UE max & min emitted power in dBm
-UE_MAX_EMITTED_POWER = 20
-UE_MIN_EMITTED_POWER = 0
+UE_MAX_EMITTED_POWER = 20.0
 
 # Open loop constants
 PREAMBLE_RETRANS_MAX = 8
@@ -66,7 +65,7 @@ FRIIS_OBSTACLE_CONSTANT = 1.3
 
 # Resolution of a cell of the grid in meters.
 # The cell dimension is CELL_RES x CELL_RES
-CELL_RES = 200
+CELL_RES = 150
 
 # Size in pixels of the main window.
 MAIN_WINDOW_HEIGHT = 720  # Max which could be used: 1366 x 768 screen (16:9).
