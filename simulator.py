@@ -153,14 +153,25 @@ class Simulator(object):
 
         This loop is in charge of the initial setting of the emitted power for any
         User Equipment in UMTS.
-
-        The initial emitted power is deduced from a comparison between a
-        measurement of the received power from the antenna (computed from Friis
-        formula) and the real emitted power from a broadcast packet.
-        This comparison gives us the free space path loss between the antenna and
-        this UE.
-        Then from this loss according to friis formula and sensitivity of the Node
-        B we can compute the initial emitted power to use with this UE .
+        
+        To compute the initial emitted power of the UE :
+        
+            - We "measure" the RxLev at the UE from the NodeB.
+            As we cannot measure the RxLev we consider only the distance between
+            the two objects as a replacement measurement.
+            To compute it we use a Friis formula with a coefficient N = 1.4
+            
+            - From this RxLev and the real Ep of the NodeB we compute a new 
+            distance but using a Friis formula with a coefficient N = 1.3.
+            As the NodeB Ep is much more higher than UE's Ep the signal from the
+            NodeB can cross obstacles whereas UE signal will be reflected and
+            therefore cover a greater distance.
+            
+            - From the second distance using a Friis formula with a coefficient
+            N = 1.3 we can compute the real RxLev of the UE at the NodeB
+            
+            - From the first distance using a Friis formula with a corefficient 
+            N = 1.3 the UE estimates its own initial Ep.
 
         Reminder :
             Friis Formula : Pr = Pe + Ge + Gr - (20log(f in MHz) + 20Nlog(d in m) - 27.55)
