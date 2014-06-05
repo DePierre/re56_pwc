@@ -185,7 +185,7 @@ class Simulator(object):
         for device in self.ues:
             # Computation of initial emitted_power for the device
             # Compute RxLev
-            RxLevNodeB = self.antenna.emitted_power + UE_GAIN + ANTENNA_GAIN - (20*log10(UMTS_FREQ)+20*(FRIIS_OBSTACLE_CONSTANT+0.1)*log10(device.distance_from_antenna) - 27.55)
+            RxLevNodeB = self.antenna.emitted_power + UE_GAIN + ANTENNA_GAIN - (20*log10(UMTS_FREQ) + 20*(FRIIS_OBSTACLE_CONSTANT+0.1)*log10(device.distance_from_antenna) - 27.55)
             # Compute the new distance covered by UE's signal
             new_distance = 10**( (-RxLevNodeB + self.antenna.emitted_power + UE_GAIN + ANTENNA_GAIN - 20 * log10(UMTS_FREQ) + 27.55)/(20*FRIIS_OBSTACLE_CONSTANT) )
             # Set the initial UE's Ep
