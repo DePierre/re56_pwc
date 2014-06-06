@@ -308,7 +308,7 @@ class Simulator(object):
         targeted received power.
 
         A free space loss calculation will be done in order to estimate the
-        power received by each UE.
+        power received from each UE.
 
         Iue= sum(Pi-FSL(ue,i)+Gi)
 
@@ -337,3 +337,57 @@ class Simulator(object):
         return 20 * log10(UMTS_FREQ) + 20 * FRIIS_OBSTACLE_CONSTANT * log10(
             device.compute_distance(neighboor)
             ) - 27.55
+            
+    def add_new_device_to_simulation(self, number):
+        """Add some new devices to the simulation in order to force a new state
+        
+        """
+        coors = []
+        # Get index of menu selected to know how to generate the new
+        # coordinates.
+        index = self._menu.get_index_menu_selected()
+        # index 1 = close distrib
+        # index 2 = far distrib
+        # index 3 = random distrib
+        if index == MENU1_INDEX:
+            i = 0
+            while i < number:
+                # Create the new device
+                new_device = UE((0, 0), self.antenna)
+                while True:
+                    new_device.set_coor_close()
+                    if not (new_device.x, new_device.y) in coors:
+                        break
+                coors.append((new_device.x, new_device.y))
+                # Set its image.
+                new_device.set_device_trying_to_connect()
+                # Add the new device to the list of devices
+                self.ues.append(new_device)    
+        elif index == MENU2_INDEX:
+            i = 0
+            while i < number:
+                # Create the new device
+                new_device = UE((0, 0), self.antenna)
+                while True:
+                    new_device.set_coor_far()
+                    if not (new_device.x, new_device.y) in coors:
+                        break
+                coors.append((new_device.x, new_device.y))
+                # Set its image.
+                new_device.set_device_trying_to_connect()
+                # Add the new device to the list of devices
+                self.ues.append(new_device)
+        elif index == MENU3_INDEX:
+            i = 0
+            while i < number:
+                # Create the new device
+                new_device = UE((0, 0), self.antenna)
+                while True:
+                    new_device.set_coor_random()
+                    if not (new_device.x, new_device.y) in coors:
+                        break
+                coors.append((new_device.x, new_device.y))
+                # Set its image.
+                new_device.set_device_trying_to_connect()
+                # Add the new device to the list of devices
+                self.ues.append(new_device)
