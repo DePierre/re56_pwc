@@ -102,10 +102,11 @@ class Simulator(object):
         while len(self.ues) < MAX_DEVICES + 1:
             # Create the new device
             new_device = UE((0, 0), self.antenna)
-            while True:
+            while i < 50:
                 new_device.set_coor_close()
                 if not (new_device.x, new_device.y) in coors:
                     break
+                i+=1
             coors.append((new_device.x, new_device.y))
             # Set its image.
             new_device.set_device_trying_to_connect()
@@ -363,7 +364,7 @@ class Simulator(object):
                 new_device.set_device_trying_to_connect()
                 # Add the new device to the list of devices
                 self.ues.append(new_device)
-                i++  
+                i+=1
         elif index == MENU2_INDEX:
             i = 0
             while i < number:
@@ -378,7 +379,7 @@ class Simulator(object):
                 new_device.set_device_trying_to_connect()
                 # Add the new device to the list of devices
                 self.ues.append(new_device)
-                i++
+                i+=1
         elif index == MENU3_INDEX:
             i = 0
             while i < number:
@@ -393,4 +394,4 @@ class Simulator(object):
                 new_device.set_device_trying_to_connect()
                 # Add the new device to the list of devices
                 self.ues.append(new_device)
-                i++
+                i+=1
