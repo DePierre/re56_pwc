@@ -102,11 +102,15 @@ class Simulator(object):
         while len(self.ues) < MAX_DEVICES + 1:
             # Create the new device
             new_device = UE((0, 0), self.antenna)
+            i = 0
             while i < 50:
                 new_device.set_coor_close()
                 if not (new_device.x, new_device.y) in coors:
                     break
                 i+=1
+            if i >= 50:
+                print "No more cell available using this distribution : 50 try / 50 failed"
+                pass
             coors.append((new_device.x, new_device.y))
             # Set its image.
             new_device.set_device_trying_to_connect()
@@ -121,10 +125,15 @@ class Simulator(object):
         while len(self.ues) < MAX_DEVICES + 1:
             # Create the new device
             new_device = UE((0, 0), self.antenna)
-            while True:
+            i = 0
+            while i < 50:
                 new_device.set_coor_far()
                 if not (new_device.x, new_device.y) in coors:
                     break
+                i+=1
+            if i >= 50:
+                print "No more cell available using this distribution : 50 try / 50 failed"
+                pass
             coors.append((new_device.x, new_device.y))
             # Set its image.
             new_device.set_device_trying_to_connect()
@@ -139,10 +148,15 @@ class Simulator(object):
         while len(self.ues) < MAX_DEVICES + 1:
             # Create the new device
             new_device = UE((0, 0), self.antenna)
-            while True:
+            i = 0
+            while i < 50:
                 new_device.set_coor_random()
                 if not (new_device.x, new_device.y) in coors:
                     break
+                i+=1
+            if i >= 50:
+                print "No more cell available using this distribution : 50 try / 50 failed"
+                pass
             coors.append((new_device.x, new_device.y))
             # Set its image.
             new_device.set_device_trying_to_connect()
@@ -198,12 +212,12 @@ class Simulator(object):
             # Compute the UE's Ep to reach to be connected
             emitted_power_to_reach = ANTENNA_SENSITIVITY - UE_GAIN - ANTENNA_GAIN + 20*log10(UMTS_FREQ) + 20*FRIIS_OBSTACLE_CONSTANT*log10(new_distance) - 27.55
             
-            print "------ new device ------"
-            print "UE Ep (dBm) : ", device.emitted_power
-            print "UE shortest path (m) : ", device.distance_from_antenna
-            print "UE real path (m) : ", new_distance
-            print "Ep to reach (dBm) : ", emitted_power_to_reach
-            print ""
+            #print "------ new device ------"
+            #print "UE Ep (dBm) : ", device.emitted_power
+            #print "UE shortest path (m) : ", device.distance_from_antenna
+            #print "UE real path (m) : ", new_distance
+            #print "Ep to reach (dBm) : ", emitted_power_to_reach
+            #print ""
             
             # Retry MAX_PREAMBLE_CYCLE times before considering the UE connected or not
             i = 0
