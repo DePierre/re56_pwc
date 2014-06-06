@@ -198,51 +198,53 @@ class Simulator(object):
         """
         # Iterates over the devices (but not the antenna)
         for device in self.ues:
-            # Computation of initial emitted_power for the device
-            # Compute RxLev
-            RxLevNodeB = self.antenna.emitted_power + UE_GAIN + ANTENNA_GAIN - (20*log10(UMTS_FREQ) + 20*(FRIIS_OBSTACLE_CONSTANT+0.1)*log10(device.distance_from_antenna) - 27.55)
-            # Compute the new distance covered by UE's signal
-            new_distance = 10**( (-RxLevNodeB + self.antenna.emitted_power + UE_GAIN + ANTENNA_GAIN - 20 * log10(UMTS_FREQ) + 27.55)/(20*FRIIS_OBSTACLE_CONSTANT) )
-            # Set the initial UE's Ep
-            initial_ep = ANTENNA_SENSITIVITY - UE_GAIN - ANTENNA_GAIN + 20*log10(UMTS_FREQ) + 20*FRIIS_OBSTACLE_CONSTANT*log10(device.distance_from_antenna) - 27.55
-            if initial_ep <= UE_MAX_EMITTED_POWER:
-                device.emitted_power = initial_ep
-            else :
-                device.emitted_power = UE_MAX_EMITTED_POWER
-            # Compute the UE's Ep to reach to be connected
-            emitted_power_to_reach = ANTENNA_SENSITIVITY - UE_GAIN - ANTENNA_GAIN + 20*log10(UMTS_FREQ) + 20*FRIIS_OBSTACLE_CONSTANT*log10(new_distance) - 27.55
-            
-            #print "------ new device ------"
-            #print "UE Ep (dBm) : ", device.emitted_power
-            #print "UE shortest path (m) : ", device.distance_from_antenna
-            #print "UE real path (m) : ", new_distance
-            #print "Ep to reach (dBm) : ", emitted_power_to_reach
-            #print ""
-            
-            # Retry MAX_PREAMBLE_CYCLE times before considering the UE connected or not
-            i = 0
-            while i < MAX_PREAMBLE_CYCLE:            
-                prev_cmd = device.command
-                prev_status = device.status
-                # Increase PREAMBLE_RETRANS_MAX times
-                j = 0
-                while j < PREAMBLE_RETRANS_MAX:
-                    with device.mutex:
-                        # If the current emitted power isn't sufficient then increase
-                        # it by a step.
-                        if device.emitted_power >= emitted_power_to_reach:
-                            device.set_device_connected()
-                        else:
-                            if device.emitted_power < UE_MAX_EMITTED_POWER:
-                                device.emitted_power += POWER_CONTROL_STEP
-                                device.set_command_up()
+            # If the device has not been open looped yet
+            if not device.open_looped:
+                # Computation of initial emitted_power for the device
+                # Compute RxLev
+                RxLevNodeB = self.antenna.emitted_power + UE_GAIN + ANTENNA_GAIN - (20*log10(UMTS_FREQ) + 20*(FRIIS_OBSTACLE_CONSTANT+0.1)*log10(device.distance_from_antenna) - 27.55)
+                # Compute the new distance covered by UE's signal
+                new_distance = 10**( (-RxLevNodeB + self.antenna.emitted_power + UE_GAIN + ANTENNA_GAIN - 20 * log10(UMTS_FREQ) + 27.55)/(20*FRIIS_OBSTACLE_CONSTANT) )
+                # Set the initial UE's Ep
+                initial_ep = ANTENNA_SENSITIVITY - UE_GAIN - ANTENNA_GAIN + 20*log10(UMTS_FREQ) + 20*FRIIS_OBSTACLE_CONSTANT*log10(device.distance_from_antenna) - 27.55
+                if initial_ep <= UE_MAX_EMITTED_POWER:
+                    device.emitted_power = initial_ep
+                else :
+                    device.emitted_power = UE_MAX_EMITTED_POWER
+                # Compute the UE's Ep to reach to be connected
+                emitted_power_to_reach = ANTENNA_SENSITIVITY - UE_GAIN - ANTENNA_GAIN + 20*log10(UMTS_FREQ) + 20*FRIIS_OBSTACLE_CONSTANT*log10(new_distance) - 27.55
+                
+                #print "------ new device ------"
+                #print "UE Ep (dBm) : ", device.emitted_power
+                #print "UE shortest path (m) : ", device.distance_from_antenna
+                #print "UE real path (m) : ", new_distance
+                #print "Ep to reach (dBm) : ", emitted_power_to_reach
+                #print ""
+                
+                # Retry MAX_PREAMBLE_CYCLE times before considering the UE connected or not
+                i = 0
+                while i < MAX_PREAMBLE_CYCLE:            
+                    prev_cmd = device.command
+                    prev_status = device.status
+                    # Increase PREAMBLE_RETRANS_MAX times
+                    j = 0
+                    while j < PREAMBLE_RETRANS_MAX:
+                        with device.mutex:
+                            # If the current emitted power isn't sufficient then increase
+                            # it by a step.
+                            if device.emitted_power >= emitted_power_to_reach:
+                                device.set_device_connected()
                             else:
-                                device.set_device_disconnected()
-                        j += 1
-                if not (prev_cmd == device.command and
-                        prev_status == device.status):
-                    self.on_render()
-                i += 1
+                                if device.emitted_power < UE_MAX_EMITTED_POWER:
+                                    device.emitted_power += POWER_CONTROL_STEP
+                                    device.set_command_up()
+                                else:
+                                    device.set_device_disconnected()
+                            j += 1
+                    if not (prev_cmd == device.command and
+                            prev_status == device.status):
+                        self.on_render()
+                    i += 1
         for device in self.ues:
             device.open_looped = True
             if device.status != CONNECTED:
@@ -355,6 +357,8 @@ class Simulator(object):
             
     def add_new_device_to_simulation(self, number):
         """Add some new devices to the simulation in order to force a new state
+        
+        This method do not check anything or run open loop
         
         """
         coors = []
