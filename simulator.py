@@ -362,7 +362,8 @@ class Simulator(object):
                 # Set its image.
                 new_device.set_device_trying_to_connect()
                 # Add the new device to the list of devices
-                self.ues.append(new_device)    
+                self.ues.append(new_device)
+                i++  
         elif index == MENU2_INDEX:
             i = 0
             while i < number:
@@ -377,6 +378,7 @@ class Simulator(object):
                 new_device.set_device_trying_to_connect()
                 # Add the new device to the list of devices
                 self.ues.append(new_device)
+                i++
         elif index == MENU3_INDEX:
             i = 0
             while i < number:
@@ -391,3 +393,4 @@ class Simulator(object):
                 new_device.set_device_trying_to_connect()
                 # Add the new device to the list of devices
                 self.ues.append(new_device)
+                i++
