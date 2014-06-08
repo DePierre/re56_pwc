@@ -1,4 +1,6 @@
 # -*- encoding: utf8 -*-
+
+
 import pygame
 from pygame.locals import *
 
@@ -23,18 +25,45 @@ class Simulator(object):
         self.height = MAIN_WINDOW_HEIGHT
         self.size = (self.weight, self.height)
 
+    def init_free_coors(self, radius=MAX_DISTANCE):
+        """Find the free coordinates on the grid.
+
+        random_coors contains all possible coordinates.
+        circle_coors contains all coordinates that is included in a circle with
+        radius=`radius`.
+        out_circle_coors contains all coordinates outside of the previous
+        circles.
+
+        """
+        self.random_coors = []
+        self.circle_coors = []
+        self.out_circle_coors = []
+        for x in range(0, int(GRID_WIDTH), int(CELL_WIDTH)):
+            for y in range(0, int(GRID_HEIGHT), int(CELL_HEIGHT)):
+                # The antenna already occupies a cell.
+                if (x == self.antenna.x and y == self.antenna.y):
+                    continue
+                self.random_coors.append((x, y))
+                # Circle: (x - a)^2 + (y - b)^2 = r^2
+                if ((x - self.antenna.x) ** 2 +
+                        (y - self.antenna.y) ** 2 < radius ** 2):
+                    self.circle_coors.append((x, y))
+                else:
+                    self.out_circle_coors.append((x, y))
+
     def on_init(self):
         pygame.init()
         # Window init.
         self._window = pygame.display.set_mode(self.size)
         # Background init.
-        self._bg_original = pygame.image.load(
-            BACKGROUND_SCALED_IMAGE)
+        self._bg_original = pygame.image.load(BACKGROUND_SCALED_IMAGE)
         self._bg = copy(self._bg_original)
         # Devices init.
         self.antenna = Antenna((ANTENNA_LOC_WIDTH, ANTENNA_LOC_HEIGHT))
         # Menu init.
         self._menu = Menu(self)
+        # Free coordinates initialization.
+        self.init_free_coors()
         # Clock init
         self._clock = pygame.time.Clock()
         self._running = True
@@ -97,71 +126,34 @@ class Simulator(object):
     def close_distribution(self):
         """Create MAX_DEVICES devices close to the antenna on the grid."""
         pygame.display.set_caption("Close distribution")
-        coors = []
-        self.ues = []
-        while len(self.ues) < MAX_DEVICES + 1:
-            # Create the new device
-            new_device = UE((0, 0), self.antenna)
-            i = 0
-            while i < 50:
-                new_device.set_coor_close()
-                if not (new_device.x, new_device.y) in coors:
-                    break
-                i+=1
-            if i >= 50:
-                print "No more cell available using this distribution : 50 try / 50 failed"
-                pass
-            coors.append((new_device.x, new_device.y))
-            # Set its image.
-            new_device.set_device_trying_to_connect()
-            # Add the new device to the list of devices
-            self.ues.append(new_device)
+        free_coors = copy(self.circle_coors)
+        self.distribution(free_coors)
 
     def far_distribution(self):
         """Create MAX_DEVICES devices far from the antenna on the grid."""
         pygame.display.set_caption("Far distribution")
-        coors = []
-        self.ues = []
-        while len(self.ues) < MAX_DEVICES + 1:
-            # Create the new device
-            new_device = UE((0, 0), self.antenna)
-            i = 0
-            while i < 50:
-                new_device.set_coor_far()
-                if not (new_device.x, new_device.y) in coors:
-                    break
-                i+=1
-            if i >= 50:
-                print "No more cell available using this distribution : 50 try / 50 failed"
-                pass
-            coors.append((new_device.x, new_device.y))
-            # Set its image.
-            new_device.set_device_trying_to_connect()
-            # Add the new device to the list of devices
-            self.ues.append(new_device)
+        free_coors = copy(self.out_circle_coors)
+        self.distribution(free_coors)
 
     def random_distribution(self):
         """Create MAX_DEVICES devices randomly on the grid."""
         pygame.display.set_caption("Random distribution")
-        coors = []
+        free_coors = copy(self.random_coors)
+        self.distribution(free_coors)
+
+    def distribution(self, free_coors):
+        """Place the devices on the grid."""
         self.ues = []
-        while len(self.ues) < MAX_DEVICES + 1:
+        while len(self.ues) < MAX_DEVICES:
             # Create the new device
             new_device = UE((0, 0), self.antenna)
-            i = 0
-            while i < 50:
-                new_device.set_coor_random()
-                if not (new_device.x, new_device.y) in coors:
-                    break
-                i+=1
-            if i >= 50:
-                print "No more cell available using this distribution : 50 try / 50 failed"
-                pass
-            coors.append((new_device.x, new_device.y))
+            new_device.set_coor_random(free_coors)
             # Set its image.
             new_device.set_device_trying_to_connect()
             # Add the new device to the list of devices
             self.ues.append(new_device)
+            if not len(free_coors):  # No more free cells.
+                break
 
     def open_loop(self):
         """Implementation of the open loop.
@@ -354,12 +346,12 @@ class Simulator(object):
         return 20 * log10(UMTS_FREQ) + 20 * FRIIS_OBSTACLE_CONSTANT * log10(
             device.compute_distance(neighboor)
             ) - 27.55
-            
+
     def add_new_device_to_simulation(self, number):
         """Add some new devices to the simulation in order to force a new state
-        
+
         This method do not check anything or run open loop
-        
+
         """
         coors = []
         # Get index of menu selected to know how to generate the new

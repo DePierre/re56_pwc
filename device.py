@@ -1,4 +1,5 @@
-#-*-coding:utf-8 -*
+# -*-coding:utf-8 -*
+
 
 import pygame
 from pygame.locals import *
@@ -11,7 +12,6 @@ from constants import *
 
 
 class Device(object):
-
     def __init__(self, (x, y)):
         self.mutex = Lock()
         self.x = x
@@ -81,65 +81,18 @@ class UE(Device):
         distance_y = abs(self.antenna.y - self.y) * PIX_IN_METERS
         return sqrt(pow(distance_x,2) + pow(distance_y,2))
 
-    def set_coor_random(self):
-        """Randomly set the coordinates of the UE."""
-        while True:
-            # Randomly generate the (x, y) coordinates of the new device.
-            x_coor = random.randint(0, GRID_HEIGHT)
-            x_coor -= x_coor % CELL_HEIGHT
-            y_coor = random.randint(0, GRID_HEIGHT)
-            y_coor -= y_coor % CELL_WIDTH
-            # A mobile device cannot be onto the antenna
-            if (x_coor == self.antenna.x and
-                    y_coor == self.antenna.y):
-                continue
-            break
-        self.x = x_coor
-        self.y = y_coor
-        self.distance_from_antenna = self.compute_distance(self.antenna)
+    def set_coor_random(self, free_coors=[]):
+        """Randomly set the coordinates of the UE.
 
-    def set_coor_close(self):
-        """Set coordinates close from the antenna."""
-        MAX_DISTANCE = 200
-        while True:
-            # Randomly generate the (x, y) coordinates of the new device.
-            x_coor = random.randint(0, GRID_HEIGHT)
-            x_coor -= x_coor % CELL_HEIGHT
-            y_coor = random.randint(0, GRID_HEIGHT)
-            y_coor -= y_coor % CELL_WIDTH
-            # A mobile device cannot be onto the antenna
-            if (x_coor == self.antenna.x and
-                    y_coor == self.antenna.y):
-                continue
-            # Circle: (x - a)^2 + (y - b)^2 = r^2
-            if ((x_coor - self.antenna.x) ** 2 +
-                    (y_coor - self.antenna.y) ** 2 > MAX_DISTANCE ** 2):
-                continue
-            break
-        self.x = x_coor
-        self.y = y_coor
-        self.distance_from_antenna = self.compute_distance(self.antenna)
+        Randomly pick a free coordinate from `free_coors`.
 
-    def set_coor_far(self):
-        """Set coordinates far from the antenna."""
-        MIN_DISTANCE = 200
-        while True:
-            # Randomly generate the (x, y) coordinates of the new device.
-            x_coor = random.randint(0, GRID_HEIGHT)
-            x_coor -= x_coor % CELL_HEIGHT
-            y_coor = random.randint(0, GRID_HEIGHT)
-            y_coor -= y_coor % CELL_WIDTH
-            # A mobile device cannot be onto the antenna
-            if (x_coor == self.antenna.x and
-                    y_coor == self.antenna.y):
-                continue
-            # Circle: (x - a)^2 + (y - b)^2 = r^2
-            if ((x_coor - self.antenna.x) ** 2 +
-                    (y_coor - self.antenna.y) ** 2 < MIN_DISTANCE ** 2):
-                continue
-            break
-        self.x = x_coor
-        self.y = y_coor
+        """
+        if not free_coors:
+            print "No more available coordinates."
+            return
+        index = random.randint(0, len(free_coors) - 1)
+        self.x, self.y = free_coors[index]
+        del free_coors[index]
         self.distance_from_antenna = self.compute_distance(self.antenna)
 
     def set_command_up(self):

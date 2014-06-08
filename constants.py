@@ -79,7 +79,8 @@ CELL_WIDTH = 20.0  # Pixels.
 # 1 pixel unit will correspond to the following value in meter
 PIX_IN_METERS = CELL_RES / CELL_HEIGHT
 
-
+# Radius of the circle for close/far distribution algo.
+MAX_DISTANCE = 200
 
 # Antenna location
 ANTENNA_LOC_HEIGHT = GRID_HEIGHT / 2 - CELL_HEIGHT
