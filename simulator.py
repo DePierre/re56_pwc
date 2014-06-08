@@ -24,6 +24,7 @@ class Simulator(object):
         self.weight = MAIN_WINDOW_WIDTH
         self.height = MAIN_WINDOW_HEIGHT
         self.size = (self.weight, self.height)
+        self.free_coors = []
 
     def init_free_coors(self, radius=MAX_DISTANCE):
         """Find the free coordinates on the grid.
@@ -77,6 +78,7 @@ class Simulator(object):
             elif event.key == pygame.K_UP:
                 self._menu.menu_previous()
             elif event.key == pygame.K_KP_ENTER or event.key == pygame.K_RETURN:
+                self.ues = []
                 self._menu.select_menu(self._menu.menu_pointed)
                 try:
                     self.start()
@@ -122,29 +124,31 @@ class Simulator(object):
         self.open_loop()
         # Then the outer loop.
         self.outer_loop()
+        # When everything is stabilized, add new devices.
+        self.force_unstable(MAX_NEW_DEVICES)
 
     def close_distribution(self):
         """Create MAX_DEVICES devices close to the antenna on the grid."""
         pygame.display.set_caption("Close distribution")
-        free_coors = copy(self.circle_coors)
-        self.distribution(free_coors)
+        self.free_coors = copy(self.circle_coors)
+        self.distribution(self.free_coors)
 
     def far_distribution(self):
         """Create MAX_DEVICES devices far from the antenna on the grid."""
         pygame.display.set_caption("Far distribution")
-        free_coors = copy(self.out_circle_coors)
-        self.distribution(free_coors)
+        self.free_coors = copy(self.out_circle_coors)
+        self.distribution(self.free_coors)
 
     def random_distribution(self):
         """Create MAX_DEVICES devices randomly on the grid."""
         pygame.display.set_caption("Random distribution")
-        free_coors = copy(self.random_coors)
-        self.distribution(free_coors)
+        self.free_coors = copy(self.random_coors)
+        self.distribution(self.free_coors)
 
-    def distribution(self, free_coors):
+    def distribution(self, free_coors, nb_devices=MAX_DEVICES):
         """Place the devices on the grid."""
-        self.ues = []
-        while len(self.ues) < MAX_DEVICES:
+        while nb_devices:
+            nb_devices -= 1
             # Create the new device
             new_device = UE((0, 0), self.antenna)
             new_device.set_coor_random(free_coors)
@@ -347,61 +351,9 @@ class Simulator(object):
             device.compute_distance(neighboor)
             ) - 27.55
 
-    def add_new_device_to_simulation(self, number):
-        """Add some new devices to the simulation in order to force a new state
-
-        This method do not check anything or run open loop
-
-        """
-        coors = []
-        # Get index of menu selected to know how to generate the new
-        # coordinates.
-        index = self._menu.get_index_menu_selected()
-        # index 1 = close distrib
-        # index 2 = far distrib
-        # index 3 = random distrib
-        if index == MENU1_INDEX:
-            i = 0
-            while i < number:
-                # Create the new device
-                new_device = UE((0, 0), self.antenna)
-                while True:
-                    new_device.set_coor_close()
-                    if not (new_device.x, new_device.y) in coors:
-                        break
-                coors.append((new_device.x, new_device.y))
-                # Set its image.
-                new_device.set_device_trying_to_connect()
-                # Add the new device to the list of devices
-                self.ues.append(new_device)
-                i+=1
-        elif index == MENU2_INDEX:
-            i = 0
-            while i < number:
-                # Create the new device
-                new_device = UE((0, 0), self.antenna)
-                while True:
-                    new_device.set_coor_far()
-                    if not (new_device.x, new_device.y) in coors:
-                        break
-                coors.append((new_device.x, new_device.y))
-                # Set its image.
-                new_device.set_device_trying_to_connect()
-                # Add the new device to the list of devices
-                self.ues.append(new_device)
-                i+=1
-        elif index == MENU3_INDEX:
-            i = 0
-            while i < number:
-                # Create the new device
-                new_device = UE((0, 0), self.antenna)
-                while True:
-                    new_device.set_coor_random()
-                    if not (new_device.x, new_device.y) in coors:
-                        break
-                coors.append((new_device.x, new_device.y))
-                # Set its image.
-                new_device.set_device_trying_to_connect()
-                # Add the new device to the list of devices
-                self.ues.append(new_device)
-                i+=1
+    def force_unstable(self, nb_new_devices):
+        """Force the simulation to become unstable by adding new devices."""
+        pygame.display.set_caption("Force unstable simulation")
+        self.distribution(self.free_coors, nb_devices=nb_new_devices)
+        self.open_loop()
+        self.outer_loop()

@@ -30,6 +30,7 @@ DEVICE_DISCONNECTED_IMAGE = PICTURE_PATH + "disconnected.png"
 
 # Maximum number of devices
 MAX_DEVICES = 150
+MAX_NEW_DEVICES = 150
 
 # UMTS frequency in MHz
 UMTS_FREQ = 2200
