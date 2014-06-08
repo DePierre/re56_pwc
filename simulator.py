@@ -158,34 +158,34 @@ class Simulator(object):
     def open_loop(self):
         """Implementation of the open loop.
 
-        This loop is in charge of the initial setting of the emitted power for any
-        User Equipment in UMTS.
-        
-        To compute the initial emitted power of the UE :
-        
-            - We "measure" the RxLev at the UE from the NodeB.
-            As we cannot measure the RxLev we consider only the distance between
-            the two objects as a replacement measurement.
-            To compute it we use a Friis formula with a coefficient N = 1.4
-            
-            - From this RxLev and the real Ep of the NodeB we compute a new 
-            distance but using a Friis formula with a coefficient N = 1.3.
-            As the NodeB Ep is much more higher than UE's Ep the signal from the
-            NodeB can cross obstacles whereas UE signal will be reflected and
-            therefore cover a greater distance.
-            
-            - From the second distance using a Friis formula with a coefficient
-            N = 1.3 we can compute the real RxLev of the UE at the NodeB
-            
-            - From the first distance using a Friis formula with a corefficient 
-            N = 1.3 the UE estimates its own initial Ep.
+        This loop is in charge of the initial setting of the emitted power for
+        any User Equipment in UMTS.
 
-        Reminder :
+        To compute the initial emitted power of the UE:
+
+            - We "measure" the RxLev at the UE from the NodeB.
+              As we cannot measure the RxLev we consider only the distance
+              between the two objects as a replacement measurement.
+              To compute it we use a Friis formula with a coefficient N = 1.4
+
+            - From this RxLev and the real Ep of the NodeB we compute a new
+              distance but using a Friis formula with a coefficient N = 1.3.
+              As the NodeB Ep is much more higher than UE's Ep the signal from
+              the NodeB can cross obstacles whereas UE signal will be reflected
+              and therefore cover a greater distance.
+
+            - From the second distance using a Friis formula with a coefficient
+              N = 1.3 we can compute the real RxLev of the UE at the NodeB
+
+            - From the first distance using a Friis formula with a corefficient
+              N = 1.3 the UE estimates its own initial Ep.
+
+        Reminder:
             Friis Formula : Pr = Pe + Ge + Gr - (20log(f in MHz) + 20Nlog(d in m) - 27.55)
             with Pr, Pe, Gr, Ge in dB
 
-            Since the gains are null the free space loss corresponds to the part
-            between parenthesis.
+            Since the gains are null the free space loss corresponds to the
+            part between parenthesis.
 
         """
         # Iterates over the devices (but not the antenna)
@@ -205,17 +205,17 @@ class Simulator(object):
                     device.emitted_power = UE_MAX_EMITTED_POWER
                 # Compute the UE's Ep to reach to be connected
                 emitted_power_to_reach = ANTENNA_SENSITIVITY - UE_GAIN - ANTENNA_GAIN + 20*log10(UMTS_FREQ) + 20*FRIIS_OBSTACLE_CONSTANT*log10(new_distance) - 27.55
-                
+
                 #print "------ new device ------"
                 #print "UE Ep (dBm) : ", device.emitted_power
                 #print "UE shortest path (m) : ", device.distance_from_antenna
                 #print "UE real path (m) : ", new_distance
                 #print "Ep to reach (dBm) : ", emitted_power_to_reach
                 #print ""
-                
+
                 # Retry MAX_PREAMBLE_CYCLE times before considering the UE connected or not
                 i = 0
-                while i < MAX_PREAMBLE_CYCLE:            
+                while i < MAX_PREAMBLE_CYCLE:
                     prev_cmd = device.command
                     prev_status = device.status
                     # Increase PREAMBLE_RETRANS_MAX times
@@ -261,15 +261,15 @@ class Simulator(object):
 
         This C/I is computed for each device as follows :
         C/I = (Pm + Gm) / (sum(Gi + Pj) + TN)
-        TN can be neglicted in our case !
-        With :
+        TN can be neglicted in our case!
+        With:
             Pi emitted power of the mobile i
             Gi gain of the mobile i
             TN = thermal noise at the base station
                 TN=kTB
-                k : Boltzmann constant 1.3806504×10-23 J/K
-                T : Temperature in Kalvin here 290 °K (20 °C)
-                B : Bandwith in Hz
+                k: Boltzmann constant 1.3806504×10-23 J/K
+                T: Temperature in Kalvin here 290 °K (20 °C)
+                B: Bandwith in Hz
 
         """
         for device in self.ues:
@@ -281,7 +281,7 @@ class Simulator(object):
                 #print "RxLev (dBm): ", device.emitted_power + UE_GAIN + ANTENNA_GAIN - self.compute_free_space_loss(self.antenna,device)
                 #print "RxLev (W): ", 10**((device.emitted_power + UE_GAIN + ANTENNA_GAIN - self.compute_free_space_loss(self.antenna,device) -30)/10)
                 #print "TOT intereferences (W): ", self.compute_interference(device)
-                
+
                 c_over_i = ( 10**((device.emitted_power + UE_GAIN + ANTENNA_GAIN - self.compute_free_space_loss(self.antenna,device) - 30)/10) )/ self.compute_interference(device)
                 device.snr = 10 * log10(c_over_i)
                 #print "SNR : ", c_over_i
