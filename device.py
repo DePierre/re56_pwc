@@ -44,12 +44,12 @@ class Device(object):
 
 class Antenna(Device):
     """Antenna."""
-
+    
     def __init__(self, (x, y)):
         Device.__init__(self, (x, y))
         self.emitted_power = ANTENNA_EMITTED_POWER
         self.image = pygame.image.load(ANTENNA_IMAGE).convert_alpha()
-        self.target = 0.0
+
 
 class UE(Device):
     """User Equipment."""
@@ -60,7 +60,8 @@ class UE(Device):
         self.distance_from_antenna = self.compute_distance(antenna)
         # Set the initial emitted power to the min.
         self.emitted_power = UE_MAX_EMITTED_POWER
-        self.snr = 0.0  # SNR in dB
+        self.snr = SINR_TARGET  # SNR in dB
+        self.target = 0.0
         self.command = COMMAND_UP
         self.status = TRY_CONNECT
         self.reload()
@@ -112,7 +113,12 @@ class UE(Device):
         else :
             self.image = pygame.image.load(
                 DEVICE_DISCONNECTED_IMAGE).convert_alpha()
-        self.emitted_power += POWER_CONTROL_STEP
+        if not self.emitted_power + POWER_CONTROL_STEP > UE_MAX_EMITTED_POWER:
+            self.emitted_power += POWER_CONTROL_STEP
+        elif self.emitted_power < UE_MAX_EMITTED_POWER and self.emitted_power + POWER_CONTROL_STEP > UE_MAX_EMITTED_POWER:
+            self.emitted_power = UE_MAX_EMITTED_POWER
+        else:
+            self.set_device_disconnected()
 
     def set_command_down(self):
         """Set the command of the device to COMMAND_DOWN.

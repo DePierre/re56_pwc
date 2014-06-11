@@ -30,7 +30,7 @@ DEVICE_DISCONNECTED_IMAGE = PICTURE_PATH + "disconnected.png"
 
 # Maximum number of devices
 MAX_DEVICES = 150
-MAX_NEW_DEVICES = 150
+MAX_NEW_DEVICES = 50
 
 # UMTS frequency in MHz
 UMTS_FREQ = 2200
@@ -44,13 +44,17 @@ ANTENNA_SENSITIVITY = -110
 UE_SENSITIVITY = -100
 
 # Power control steps in dB
-POWER_CONTROL_STEP = 1
+POWER_CONTROL_STEP = 3
+TARGET_STEP = 1
 
 # Antenna emitted powerin dBm
 ANTENNA_EMITTED_POWER = 50.0
 
 # UE max & min emitted power in dBm
 UE_MAX_EMITTED_POWER = 20.0
+
+# UE SINR target in dB
+SINR_TARGET = -20.0
 
 # Open loop constants
 PREAMBLE_RETRANS_MAX = 8

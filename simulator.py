@@ -86,6 +86,8 @@ class Simulator(object):
                     self._running = False
             elif event.key == pygame.K_ESCAPE:
                 self._running = False
+            elif event.key == pygame.K_SPACE:
+                self.force_unstable(MAX_NEW_DEVICES)
 
     def on_loop(self):
         pass
@@ -120,12 +122,19 @@ class Simulator(object):
 
     def start(self):
         """Start the simulation according to the distribution scenario."""
+        # TODO : the three loops should be executed in infinite loop => threads
         # First start the open loop process.
         self.open_loop()
-        # Then the outer loop.
-        self.outer_loop()
-        # When everything is stabilized, add new devices.
-        self.force_unstable(MAX_NEW_DEVICES)
+        i = 0
+        while True:
+            print " ---- loop " + str(i) + " ----"
+            # Then the outer loop.
+            self.outer_loop()
+            self.inner_loop()
+            self.on_render()
+            print "enter"
+            raw_input()
+            #i += 1
 
     def close_distribution(self):
         """Create MAX_DEVICES devices close to the antenna on the grid."""
@@ -210,13 +219,6 @@ class Simulator(object):
                 # Compute the UE's Ep to reach to be connected
                 emitted_power_to_reach = ANTENNA_SENSITIVITY - UE_GAIN - ANTENNA_GAIN + 20*log10(UMTS_FREQ) + 20*FRIIS_OBSTACLE_CONSTANT*log10(new_distance) - 27.55
 
-                #print "------ new device ------"
-                #print "UE Ep (dBm) : ", device.emitted_power
-                #print "UE shortest path (m) : ", device.distance_from_antenna
-                #print "UE real path (m) : ", new_distance
-                #print "Ep to reach (dBm) : ", emitted_power_to_reach
-                #print ""
-
                 # Retry MAX_PREAMBLE_CYCLE times before considering the UE connected or not
                 i = 0
                 while i < MAX_PREAMBLE_CYCLE:
@@ -230,6 +232,13 @@ class Simulator(object):
                             # it by a step.
                             if device.emitted_power >= emitted_power_to_reach:
                                 device.set_device_connected()
+                                fsl = 20 * log10(UMTS_FREQ) + 20 * FRIIS_OBSTACLE_CONSTANT * log10(device.distance_from_antenna) - 27.55
+                                device.target = device.emitted_power + UE_GAIN + ANTENNA_GAIN - fsl
+                                print "------ new device ------"
+                                print "UE Ep (dBm) : ", device.emitted_power
+                                print "UE fsl (dB) : ", fsl
+                                print "UE target (dBm) : ", device.target
+                                print ""
                             else:
                                 if device.emitted_power < UE_MAX_EMITTED_POWER:
                                     device.emitted_power += POWER_CONTROL_STEP
@@ -255,13 +264,9 @@ class Simulator(object):
     def outer_loop(self):
         """Implementation of the outer loop.
 
-        This loop is in charge of the computation of the BER. This BER is used
+        This loop is in charge of the computation of the SINR. This SINR is used
         to set the target received power of the antenna from which the antenna
         can take a decision about the command to send to the UE.
-
-        This BER is obtained thanks to a table. This table contains the
-        corresponding C/I for a specific BER.
-        From that we can obtain our BER from a computation of a C/I.
 
         This C/I is computed for each device as follows :
         C/I = (Pm + Gm) / (sum(Gi + Pj) + TN)
@@ -279,19 +284,12 @@ class Simulator(object):
         for device in self.ues:
             # Compute C/I.
             if device.emitted_power + UE_GAIN + ANTENNA_GAIN - self.compute_free_space_loss(self.antenna,device) >= ANTENNA_SENSITIVITY:
-                #print "-------- outer_loop --------"
-                #print "Dist (m): ", str(device.compute_distance(self.antenna))
-                #print "FSL : ", str(self.compute_free_space_loss(self.antenna,device))
-                #print "RxLev (dBm): ", device.emitted_power + UE_GAIN + ANTENNA_GAIN - self.compute_free_space_loss(self.antenna,device)
-                #print "RxLev (W): ", 10**((device.emitted_power + UE_GAIN + ANTENNA_GAIN - self.compute_free_space_loss(self.antenna,device) -30)/10)
-                #print "TOT intereferences (W): ", self.compute_interference(device)
-
                 c_over_i = ( 10**((device.emitted_power + UE_GAIN + ANTENNA_GAIN - self.compute_free_space_loss(self.antenna,device) - 30)/10) )/ self.compute_interference(device)
-                device.snr = 10 * log10(c_over_i)
-                #print "SNR : ", c_over_i
-                #print "SNR (dB): ", device.snr
-                #print ""
-                # TODO: Find the associated BLER and compare with target.
+                c_over_i = 10 * log10(c_over_i)
+                if c_over_i < device.snr:
+                    device.target += TARGET_STEP
+                else:
+                    device.target -= TARGET_STEP
 
     def inner_loop(self):
         """Implementation of the Inner loop.
@@ -301,16 +299,19 @@ class Simulator(object):
 
         """
         for device in self.ues:
-            # Compute the received power
-            fsl = 20 * log10(UMTS_FREQ) + 20 * FRIIS_OBSTACLE_CONSTANT * log10(
-            device.distance_from_antenna
-            ) - 27.55
-            received_power = device.emitted_power - fsl
-            # If the received power is under the target then send command up
-            if received_power < self.antenna.target:
-                device.set_command_up()
-            else:
-                device.set_command_down()
+            if not device.status == NOT_CONNECTED:
+                # Compute the received power
+                fsl = 20 * log10(UMTS_FREQ) + 20 * FRIIS_OBSTACLE_CONSTANT * log10(
+                device.distance_from_antenna
+                ) - 27.55
+                received_power = device.emitted_power +UE_GAIN + ANTENNA_GAIN - fsl
+                # If the received power is under the target then send command up
+                if received_power < device.target:
+                    device.set_command_up()
+                    print "inner loop : command up (RxLev = " + str(received_power) + ", target = " + str(device.target) + ")"
+                else:
+                    device.set_command_down()
+                    print "inner loop : command down (RxLev = " + str(received_power) + ", target = " + str(device.target) + ")"
 
     def compute_interference(self, device):
         """Interference computation for a given device.
