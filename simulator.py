@@ -6,6 +6,7 @@ from pygame.locals import *
 
 from copy import copy
 from math import log10, sqrt
+from threading import *
 
 from constants import *
 from device import Antenna, UE
@@ -133,8 +134,8 @@ class Simulator(object):
             self.inner_loop()
             self.on_render()
             print "enter"
-            raw_input()
-            #i += 1
+            #raw_input()
+            i += 1
 
     def close_distribution(self):
         """Create MAX_DEVICES devices close to the antenna on the grid."""
@@ -354,6 +355,7 @@ class Simulator(object):
 
     def force_unstable(self, nb_new_devices):
         """Force the simulation to become unstable by adding new devices."""
+        # TODO : before any treatment, pause the three loops thread
         pygame.display.set_caption("Force unstable simulation")
         self.distribution(self.free_coors, nb_devices=nb_new_devices)
         self.open_loop()
