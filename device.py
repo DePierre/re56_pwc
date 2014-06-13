@@ -44,7 +44,7 @@ class Device(object):
 
 class Antenna(Device):
     """Antenna."""
-    
+
     def __init__(self, (x, y)):
         Device.__init__(self, (x, y))
         self.emitted_power = ANTENNA_EMITTED_POWER
