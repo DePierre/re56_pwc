@@ -6,7 +6,7 @@ from pygame.locals import *
 
 from copy import copy
 from math import log10, sqrt
-from threading import *
+from threading import Thread
 
 from constants import *
 from device import Antenna, UE
@@ -89,9 +89,7 @@ class Simulator(object):
                 self._running = False
             elif event.key == pygame.K_SPACE:
                 self.force_unstable(MAX_NEW_DEVICES)
-
-    def on_loop(self):
-        pass
+        self.on_render()
 
     def on_render(self):
         self._bg = copy(self._bg_original)
@@ -113,26 +111,30 @@ class Simulator(object):
         if self.on_init() is False:
             self._running = False
 
+        self.on_render()
         while self._running:
             self._clock.tick(60)
             for event in pygame.event.get():
                 self.on_event(event)
-            self.on_loop()
-            self.on_render()
         self.on_cleanup()
 
     def start(self):
         """Start the simulation according to the distribution scenario."""
-        # TODO : the three loops should be executed in infinite loop => threads
-        # First start the open loop process.
-        self.open_loop()
         i = 0
         while True:
             print " ---- loop " + str(i) + " ----"
-            # Then the outer loop.
-            self.outer_loop()
-            self.inner_loop()
-            self.on_render()
+            open_thread = Thread(target=self.open_loop)
+            outer_thread = Thread(target=self.outer_loop)
+            inner_thread = Thread(target=self.inner_loop)
+            render_thread = Thread(target=self.on_render)
+            open_thread.start()
+            outer_thread.start()
+            inner_thread.start()
+            render_thread.start()
+            #open_thread.join()
+            #outer_thread.join()
+            #inner_thread.join()
+            #render_thread.join()
             print "enter"
             #raw_input()
             i += 1
@@ -204,46 +206,46 @@ class Simulator(object):
         """
         # Iterates over the devices (but not the antenna)
         for device in self.ues:
-            # If the device has not been open looped yet
-            if not device.open_looped:
-                # Computation of initial emitted_power for the device
-                # Compute RxLev
-                RxLevNodeB = self.antenna.emitted_power + \
-                             UE_GAIN + ANTENNA_GAIN - \
-                             (20 * log10(UMTS_FREQ) + \
-                             20 * (FRIIS_OBSTACLE_CONSTANT+0.1) * \
-                             log10(device.distance_from_antenna) - 27.55)
-                # Compute the new distance covered by UE's signal
-                new_distance = 10**(
-                    (-RxLevNodeB + self.antenna.emitted_power + \
-                    UE_GAIN + ANTENNA_GAIN - 20 * log10(UMTS_FREQ) + 27.55) /
-                    (20*FRIIS_OBSTACLE_CONSTANT)
-                    )
-                # Set the initial UE's Ep
-                initial_ep = ANTENNA_SENSITIVITY - UE_GAIN - ANTENNA_GAIN + \
-                             20 * log10(UMTS_FREQ) + \
-                             20 * FRIIS_OBSTACLE_CONSTANT * \
-                             log10(device.distance_from_antenna) - 27.55
-                if initial_ep <= UE_MAX_EMITTED_POWER:
-                    device.emitted_power = initial_ep
-                else :
-                    device.emitted_power = UE_MAX_EMITTED_POWER
-                # Compute the UE's Ep to reach to be connected
-                emitted_power_to_reach = ANTENNA_SENSITIVITY - UE_GAIN - \
-                                         ANTENNA_GAIN + \
-                                         20 * log10(UMTS_FREQ) + \
-                                         20 * FRIIS_OBSTACLE_CONSTANT * \
-                                         log10(new_distance) - 27.55
-                # Retry MAX_PREAMBLE_CYCLE times before considering the UE
-                # connected or not.
-                i = 0
-                while i < MAX_PREAMBLE_CYCLE:
-                    prev_cmd = device.command
-                    prev_status = device.status
-                    # Increase PREAMBLE_RETRANS_MAX times
-                    j = 0
-                    while j < PREAMBLE_RETRANS_MAX:
-                        with device.mutex:
+            with device.mutex:
+                # If the device has not been open looped yet
+                if not device.open_looped:
+                    # Computation of initial emitted_power for the device
+                    # Compute RxLev
+                    RxLevNodeB = self.antenna.emitted_power + \
+                                 UE_GAIN + ANTENNA_GAIN - \
+                                 (20 * log10(UMTS_FREQ) + \
+                                 20 * (FRIIS_OBSTACLE_CONSTANT+0.1) * \
+                                 log10(device.distance_from_antenna) - 27.55)
+                    # Compute the new distance covered by UE's signal
+                    new_distance = 10**(
+                        (-RxLevNodeB + self.antenna.emitted_power + \
+                        UE_GAIN + ANTENNA_GAIN - 20 * log10(UMTS_FREQ) + 27.55) /
+                        (20*FRIIS_OBSTACLE_CONSTANT)
+                        )
+                    # Set the initial UE's Ep
+                    initial_ep = ANTENNA_SENSITIVITY - UE_GAIN - ANTENNA_GAIN + \
+                                 20 * log10(UMTS_FREQ) + \
+                                 20 * FRIIS_OBSTACLE_CONSTANT * \
+                                 log10(device.distance_from_antenna) - 27.55
+                    if initial_ep <= UE_MAX_EMITTED_POWER:
+                        device.emitted_power = initial_ep
+                    else :
+                        device.emitted_power = UE_MAX_EMITTED_POWER
+                    # Compute the UE's Ep to reach to be connected
+                    emitted_power_to_reach = ANTENNA_SENSITIVITY - UE_GAIN - \
+                                             ANTENNA_GAIN + \
+                                             20 * log10(UMTS_FREQ) + \
+                                             20 * FRIIS_OBSTACLE_CONSTANT * \
+                                             log10(new_distance) - 27.55
+                    # Retry MAX_PREAMBLE_CYCLE times before considering the UE
+                    # connected or not.
+                    i = 0
+                    while i < MAX_PREAMBLE_CYCLE:
+                        prev_cmd = device.command
+                        prev_status = device.status
+                        # Increase PREAMBLE_RETRANS_MAX times
+                        j = 0
+                        while j < PREAMBLE_RETRANS_MAX:
                             # If the current emitted power isn't sufficient
                             # then increase it by a step.
                             if device.emitted_power >= emitted_power_to_reach:
@@ -266,20 +268,21 @@ class Simulator(object):
                                 else:
                                     device.set_device_disconnected()
                             j += 1
-                    if not (prev_cmd == device.command and
-                            prev_status == device.status):
-                        self.on_render()
-                    i += 1
+                        #if not (prev_cmd == device.command and
+                        #        prev_status == device.status):
+                        #    self.on_render()
+                        i += 1
         for device in self.ues:
-            device.open_looped = True
-            if device.status != CONNECTED:
-                prev_cmd = device.command
-                prev_status = device.status
-                device.set_device_disconnected()
-                # Only render if changed.
-                if not (prev_cmd == device.command and
-                        prev_status == device.status):
-                    self.on_render()
+            with device.mutex:
+                device.open_looped = True
+                if device.status != CONNECTED:
+                    prev_cmd = device.command
+                    prev_status = device.status
+                    device.set_device_disconnected()
+                    # Only render if changed.
+                    #if not (prev_cmd == device.command and
+                    #        prev_status == device.status):
+                    #    self.on_render()
 
     def outer_loop(self):
         """Implementation of the outer loop.
@@ -302,20 +305,21 @@ class Simulator(object):
 
         """
         for device in self.ues:
-            if device.open_looped:
-                # Compute C/I.
-                needed_power = device.emitted_power + UE_GAIN + ANTENNA_GAIN - \
-                               self.compute_free_space_loss(self.antenna,device)
-                if needed_power >= ANTENNA_SENSITIVITY:
-                    c_over_i = (10**((
-                        device.emitted_power + UE_GAIN + ANTENNA_GAIN -
-                        self.compute_free_space_loss(self.antenna,device) - 30) /
-                        10)) / self.compute_interference(device)
-                    c_over_i = 10 * log10(c_over_i)
-                    if c_over_i < device.snr:
-                        device.target += TARGET_STEP
-                    else:
-                        device.target -= TARGET_STEP
+            with device.mutex:
+                if device.open_looped:
+                    # Compute C/I.
+                    needed_power = device.emitted_power + UE_GAIN + ANTENNA_GAIN - \
+                                   self.compute_free_space_loss(self.antenna,device)
+                    if needed_power >= ANTENNA_SENSITIVITY:
+                        c_over_i = (10**((
+                            device.emitted_power + UE_GAIN + ANTENNA_GAIN -
+                            self.compute_free_space_loss(self.antenna,device) - 30) /
+                            10)) / self.compute_interference(device)
+                        c_over_i = 10 * log10(c_over_i)
+                        if c_over_i < device.snr:
+                            device.target += TARGET_STEP
+                        else:
+                            device.target -= TARGET_STEP
 
     def inner_loop(self):
         """Implementation of the Inner loop.
@@ -325,25 +329,26 @@ class Simulator(object):
 
         """
         for device in self.ues:
-            if device.open_looped:
-                if not device.status == NOT_CONNECTED:
-                    # Compute the received power
-                    fsl = 20 * log10(UMTS_FREQ) + 20 * FRIIS_OBSTACLE_CONSTANT * \
-                          log10(device.distance_from_antenna) - 27.55
-                    received_power = device.emitted_power + UE_GAIN + \
-                                     ANTENNA_GAIN - fsl
-                    # If the received power is under the target then send command
-                    # up.
-                    if received_power < device.target:
-                        device.set_command_up()
-                        print "inner loop : command up (RxLev = " + \
-                              str(received_power) + ", target = " + \
-                              str(device.target) + ")"
-                    else:
-                        device.set_command_down()
-                        print "inner loop : command down (RxLev = " + \
-                               str(received_power) + ", target = " + \
-                               str(device.target) + ")"
+            with device.mutex:
+                if device.open_looped:
+                    if not device.status == NOT_CONNECTED:
+                        # Compute the received power
+                        fsl = 20 * log10(UMTS_FREQ) + 20 * FRIIS_OBSTACLE_CONSTANT * \
+                              log10(device.distance_from_antenna) - 27.55
+                        received_power = device.emitted_power + UE_GAIN + \
+                                         ANTENNA_GAIN - fsl
+                        # If the received power is under the target then send command
+                        # up.
+                        if received_power < device.target:
+                            device.set_command_up()
+                            print "inner loop : command up (RxLev = " + \
+                                  str(received_power) + ", target = " + \
+                                  str(device.target) + ")"
+                        else:
+                            device.set_command_down()
+                            print "inner loop : command down (RxLev = " + \
+                                   str(received_power) + ", target = " + \
+                                   str(device.target) + ")"
 
     def compute_interference(self, device):
         """Interference computation for a given device.
