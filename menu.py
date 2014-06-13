@@ -61,21 +61,28 @@ class Menu_Item(object):
 class Menu(object):
     items = [
         Menu_Item(
-            (MENU_ITEM_OFFSET_FROM_LEFT_RIGHT_PANEL_SIDE, MENU_OFFSET_FROM_TOP_RIGHT_PANEL),
+            (
+                MENU_ITEM_OFFSET_FROM_LEFT_RIGHT_PANEL_SIDE,
+                MENU_OFFSET_FROM_TOP_RIGHT_PANEL
+            ),
             MENU_SELECTION1_IMAGE,
             MENU_SELECTION1_SELECTED_IMAGE),
         Menu_Item(
-            (MENU_ITEM_OFFSET_FROM_LEFT_RIGHT_PANEL_SIDE, MENU_OFFSET_FROM_TOP_RIGHT_PANEL + MENU_ITEM_HEIGHT),
+            (
+                MENU_ITEM_OFFSET_FROM_LEFT_RIGHT_PANEL_SIDE,
+                MENU_OFFSET_FROM_TOP_RIGHT_PANEL + MENU_ITEM_HEIGHT
+            ),
             MENU_SELECTION2_IMAGE,
             MENU_SELECTION2_SELECTED_IMAGE),
         Menu_Item(
-            (MENU_ITEM_OFFSET_FROM_LEFT_RIGHT_PANEL_SIDE, MENU_OFFSET_FROM_TOP_RIGHT_PANEL + 2*MENU_ITEM_HEIGHT),
+            (
+                MENU_ITEM_OFFSET_FROM_LEFT_RIGHT_PANEL_SIDE,
+                MENU_OFFSET_FROM_TOP_RIGHT_PANEL + 2 * MENU_ITEM_HEIGHT
+            ),
             MENU_SELECTION3_IMAGE,
             MENU_SELECTION3_SELECTED_IMAGE)]
-    arrow_selector = pygame.image.load(
-        ARROW_SELECTOR_IMAGE)
-    surface = pygame.image.load(
-        RIGHT_PANEL_IMAGE)
+    arrow_selector = pygame.image.load(ARROW_SELECTOR_IMAGE)
+    surface = pygame.image.load(RIGHT_PANEL_IMAGE)
     menu_pointed = MENU3_INDEX
 
     def __init__(self, simulator):
@@ -83,9 +90,10 @@ class Menu(object):
         self.init = False
          # Display some text
         font = pygame.font.Font(None, 18)
-        self.resolution = font.render("1 Squarre : " + str(CELL_RES) + "x" + str(CELL_RES) + " meters", 1, (255, 255, 255))
-        #textpos = text.get_rect()
-        #textpos.centerx = background.get_rect().centerx
+        self.resolution = font.render(
+            "1 Squarre : " + str(CELL_RES) + "x" + str(CELL_RES) + " meters",
+            1,
+            (255, 255, 255))
         self.select_menu(MENU3_INDEX)
 
     def select_menu(self, index):
@@ -122,9 +130,7 @@ class Menu(object):
         self.surface.blit(self.resolution, (300, 700))
         # Load each image to the surface.
         for item in self.items:
-            self.surface.blit(
-                item.image,
-                (item.x, item.y))
+            self.surface.blit(item.image, (item.x, item.y))
         # Load image of arrow selector beside the menu item selected.
         self.surface.blit(
             self.arrow_selector, (
