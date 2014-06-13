@@ -63,9 +63,9 @@ SINR_TARGET = [
     3,  # HSDPA-2000
 ]
 DIST = [
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  # 55% CS-12,2
-    1, 1, 1, 1,  # 20% PS-64
-    2, 2,  # 10% PS-128
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  # 70% CS-12,2
+    1, 1, # 10% PS-64
+    2,  # 5% PS-128
     3,  # 5% PS-384
     4,  # 5% HSDPA-768
     5,  # 5% HSDPA-2000
@@ -85,7 +85,7 @@ FRIIS_OBSTACLE_CONSTANT = 1.3
 
 # Resolution of a cell of the grid in meters.
 # The cell dimension is CELL_RES x CELL_RES
-CELL_RES = 150
+CELL_RES = 100
 
 # Size in pixels of the main window.
 MAIN_WINDOW_HEIGHT = 720  # Max which could be used: 1366 x 768 screen (16:9).
