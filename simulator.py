@@ -234,7 +234,8 @@ class Simulator(object):
                                          20 * log10(UMTS_FREQ) + \
                                          20 * FRIIS_OBSTACLE_CONSTANT * \
                                          log10(new_distance) - 27.55
-                # Retry MAX_PREAMBLE_CYCLE times before considering the UE connected or not
+                # Retry MAX_PREAMBLE_CYCLE times before considering the UE
+                # connected or not.
                 i = 0
                 while i < MAX_PREAMBLE_CYCLE:
                     prev_cmd = device.command
@@ -301,19 +302,20 @@ class Simulator(object):
 
         """
         for device in self.ues:
-            # Compute C/I.
-            needed_power = device.emitted_power + UE_GAIN + ANTENNA_GAIN - \
-                           self.compute_free_space_loss(self.antenna,device)
-            if needed_power >= ANTENNA_SENSITIVITY:
-                c_over_i = (10**((
-                    device.emitted_power + UE_GAIN + ANTENNA_GAIN -
-                    self.compute_free_space_loss(self.antenna,device) - 30) /
-                    10)) / self.compute_interference(device)
-                c_over_i = 10 * log10(c_over_i)
-                if c_over_i < device.snr:
-                    device.target += TARGET_STEP
-                else:
-                    device.target -= TARGET_STEP
+            if device.open_looped:
+                # Compute C/I.
+                needed_power = device.emitted_power + UE_GAIN + ANTENNA_GAIN - \
+                               self.compute_free_space_loss(self.antenna,device)
+                if needed_power >= ANTENNA_SENSITIVITY:
+                    c_over_i = (10**((
+                        device.emitted_power + UE_GAIN + ANTENNA_GAIN -
+                        self.compute_free_space_loss(self.antenna,device) - 30) /
+                        10)) / self.compute_interference(device)
+                    c_over_i = 10 * log10(c_over_i)
+                    if c_over_i < device.snr:
+                        device.target += TARGET_STEP
+                    else:
+                        device.target -= TARGET_STEP
 
     def inner_loop(self):
         """Implementation of the Inner loop.
@@ -323,24 +325,25 @@ class Simulator(object):
 
         """
         for device in self.ues:
-            if not device.status == NOT_CONNECTED:
-                # Compute the received power
-                fsl = 20 * log10(UMTS_FREQ) + 20 * FRIIS_OBSTACLE_CONSTANT * \
-                      log10(device.distance_from_antenna) - 27.55
-                received_power = device.emitted_power + UE_GAIN + \
-                                 ANTENNA_GAIN - fsl
-                # If the received power is under the target then send command
-                # up.
-                if received_power < device.target:
-                    device.set_command_up()
-                    print "inner loop : command up (RxLev = " + \
-                          str(received_power) + ", target = " + \
-                          str(device.target) + ")"
-                else:
-                    device.set_command_down()
-                    print "inner loop : command down (RxLev = " + \
-                           str(received_power) + ", target = " + \
-                           str(device.target) + ")"
+            if device.open_looped:
+                if not device.status == NOT_CONNECTED:
+                    # Compute the received power
+                    fsl = 20 * log10(UMTS_FREQ) + 20 * FRIIS_OBSTACLE_CONSTANT * \
+                          log10(device.distance_from_antenna) - 27.55
+                    received_power = device.emitted_power + UE_GAIN + \
+                                     ANTENNA_GAIN - fsl
+                    # If the received power is under the target then send command
+                    # up.
+                    if received_power < device.target:
+                        device.set_command_up()
+                        print "inner loop : command up (RxLev = " + \
+                              str(received_power) + ", target = " + \
+                              str(device.target) + ")"
+                    else:
+                        device.set_command_down()
+                        print "inner loop : command down (RxLev = " + \
+                               str(received_power) + ", target = " + \
+                               str(device.target) + ")"
 
     def compute_interference(self, device):
         """Interference computation for a given device.
