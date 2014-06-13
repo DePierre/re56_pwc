@@ -54,7 +54,22 @@ ANTENNA_EMITTED_POWER = 50.0
 UE_MAX_EMITTED_POWER = 20.0
 
 # UE SINR target in dB
-SINR_TARGET = -20.0
+SINR_TARGET = [
+    -20.0,  # CS-12,2
+    -18.0,  # PS-64
+    -15.0,  # PS-128
+    -10.0,  # PS-384
+    0,  # HSDPA-768
+    3,  # HSDPA-2000
+]
+DIST = [
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  # 55% CS-12,2
+    1, 1, 1, 1,  # 20% PS-64
+    2, 2,  # 10% PS-128
+    3,  # 5% PS-384
+    4,  # 5% HSDPA-768
+    5,  # 5% HSDPA-2000
+]
 
 # Open loop constants
 PREAMBLE_RETRANS_MAX = 8

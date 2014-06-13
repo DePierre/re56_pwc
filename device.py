@@ -60,7 +60,7 @@ class UE(Device):
         self.distance_from_antenna = self.compute_distance(antenna)
         # Set the initial emitted power to the min.
         self.emitted_power = UE_MAX_EMITTED_POWER
-        self.snr = SINR_TARGET  # SNR in dB
+        self.snr = SINR_TARGET[random.choice(DIST)]  # SNR in dB
         self.target = 0.0
         self.command = COMMAND_UP
         self.status = TRY_CONNECT
