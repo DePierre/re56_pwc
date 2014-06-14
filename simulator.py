@@ -57,11 +57,13 @@ class Simulator(object):
         pygame.init()
         # Window init.
         self._window = pygame.display.set_mode(self.size)
-        # Background init.
-        self._bg_original = pygame.image.load(BACKGROUND_SCALED_IMAGE)
-        self._bg = copy(self._bg_original)
         # Devices init.
         self.antenna = Antenna((ANTENNA_LOC_WIDTH, ANTENNA_LOC_HEIGHT))
+        # Background init.
+        self._bg = pygame.image.load(BACKGROUND_SCALED_IMAGE)
+        self._bg.blit(
+            self.antenna.image,
+            (self.antenna.x, self.antenna.y))
         # Menu init.
         self._menu = Menu(self)
         # Free coordinates initialization.
@@ -92,17 +94,16 @@ class Simulator(object):
         self.on_render()
 
     def on_render(self):
-        self._bg = copy(self._bg_original)
-        self._bg.blit(
-            self.antenna.image,
-            (self.antenna.x, self.antenna.y))
-        for device in self.ues:
-            self._bg.blit(
-                device.image,
-                (device.x, device.y))
         self._window.blit(self._bg, (0, 0))
         self._window.blit(self._menu.surface, (GRID_WIDTH, 0))
         pygame.display.flip()
+
+    def update_device(self, device):
+        # Erase older display with an empty cell because of the alpha.
+        empty_cell = pygame.image.load(CELL_IMAGE).convert_alpha()
+        self._bg.blit(empty_cell, (device.x, device.y))
+        # Blit the new device image.
+        self._bg.blit(device.image, (device.x, device.y))
 
     def on_cleanup(self):
         pygame.quit()
@@ -131,12 +132,6 @@ class Simulator(object):
             outer_thread.start()
             inner_thread.start()
             render_thread.start()
-            #open_thread.join()
-            #outer_thread.join()
-            #inner_thread.join()
-            #render_thread.join()
-            print "enter"
-            #raw_input()
             i += 1
 
     def close_distribution(self):
@@ -166,6 +161,7 @@ class Simulator(object):
             new_device.set_coor_random(free_coors)
             # Set its image.
             new_device.set_device_trying_to_connect()
+            self.update_device(new_device)
             # Add the new device to the list of devices
             self.ues.append(new_device)
             if not len(free_coors):  # No more free cells.
@@ -268,9 +264,9 @@ class Simulator(object):
                                 else:
                                     device.set_device_disconnected()
                             j += 1
-                        #if not (prev_cmd == device.command and
-                        #        prev_status == device.status):
-                        #    self.on_render()
+                        if not (prev_cmd == device.command and
+                                prev_status == device.status):
+                            self.update_device(device)
                         i += 1
         for device in self.ues:
             with device.mutex:
@@ -280,9 +276,9 @@ class Simulator(object):
                     prev_status = device.status
                     device.set_device_disconnected()
                     # Only render if changed.
-                    #if not (prev_cmd == device.command and
-                    #        prev_status == device.status):
-                    #    self.on_render()
+                    if not (prev_cmd == device.command and
+                            prev_status == device.status):
+                        self.update_device(device)
 
     def outer_loop(self):
         """Implementation of the outer loop.
@@ -341,11 +337,13 @@ class Simulator(object):
                         # up.
                         if received_power < device.target:
                             device.set_command_up()
+                            self.update_device(device)
                             print "inner loop : command up (RxLev = " + \
                                   str(received_power) + ", target = " + \
                                   str(device.target) + ")"
                         else:
                             device.set_command_down()
+                            self.update_device(device)
                             print "inner loop : command down (RxLev = " + \
                                    str(received_power) + ", target = " + \
                                    str(device.target) + ")"

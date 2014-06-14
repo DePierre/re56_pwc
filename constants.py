@@ -13,6 +13,7 @@ PICTURE_PATH = "pictures/"
 # Picture names.
 BACKGROUND_IMAGE = PICTURE_PATH + "background.png"
 BACKGROUND_SCALED_IMAGE = PICTURE_PATH + "background_scale.png"
+CELL_IMAGE = PICTURE_PATH + "empty_cell.png"
 RIGHT_PANEL_IMAGE = PICTURE_PATH + "right_pane.png"
 ANTENNA_IMAGE = PICTURE_PATH + "antenna2.png"
 MENU_SELECTION1_IMAGE = PICTURE_PATH + "menu_selection_1.png"
