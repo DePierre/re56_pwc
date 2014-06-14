@@ -6,6 +6,7 @@ from pygame.locals import *
 
 from copy import copy
 from math import log10, sqrt
+from random import choice
 from threading import Thread
 
 from constants import *
@@ -201,84 +202,82 @@ class Simulator(object):
 
         """
         # Iterates over the devices (but not the antenna)
-        for device in self.ues:
-            with device.mutex:
-                # If the device has not been open looped yet
-                if not device.open_looped:
-                    # Computation of initial emitted_power for the device
-                    # Compute RxLev
-                    RxLevNodeB = self.antenna.emitted_power + \
-                                 UE_GAIN + ANTENNA_GAIN - \
-                                 (20 * log10(UMTS_FREQ) + \
-                                 20 * (FRIIS_OBSTACLE_CONSTANT+0.1) * \
-                                 log10(device.distance_from_antenna) - 27.55)
-                    # Compute the new distance covered by UE's signal
-                    new_distance = 10**(
-                        (-RxLevNodeB + self.antenna.emitted_power + \
-                        UE_GAIN + ANTENNA_GAIN - 20 * log10(UMTS_FREQ) + 27.55) /
-                        (20*FRIIS_OBSTACLE_CONSTANT)
-                        )
-                    # Set the initial UE's Ep
-                    initial_ep = ANTENNA_SENSITIVITY - UE_GAIN - ANTENNA_GAIN + \
-                                 20 * log10(UMTS_FREQ) + \
-                                 20 * FRIIS_OBSTACLE_CONSTANT * \
-                                 log10(device.distance_from_antenna) - 27.55
-                    if initial_ep <= UE_MAX_EMITTED_POWER:
-                        device.emitted_power = initial_ep
-                    else :
-                        device.emitted_power = UE_MAX_EMITTED_POWER
-                    # Compute the UE's Ep to reach to be connected
-                    emitted_power_to_reach = ANTENNA_SENSITIVITY - UE_GAIN - \
-                                             ANTENNA_GAIN + \
-                                             20 * log10(UMTS_FREQ) + \
-                                             20 * FRIIS_OBSTACLE_CONSTANT * \
-                                             log10(new_distance) - 27.55
-                    # Retry MAX_PREAMBLE_CYCLE times before considering the UE
-                    # connected or not.
-                    i = 0
-                    while i < MAX_PREAMBLE_CYCLE:
-                        prev_cmd = device.command
-                        prev_status = device.status
-                        # Increase PREAMBLE_RETRANS_MAX times
-                        j = 0
-                        while j < PREAMBLE_RETRANS_MAX:
-                            # If the current emitted power isn't sufficient
-                            # then increase it by a step.
-                            if device.emitted_power >= emitted_power_to_reach:
-                                device.set_device_connected()
-                                fsl = 20 * log10(UMTS_FREQ) + \
-                                      20 * FRIIS_OBSTACLE_CONSTANT * \
-                                      log10(device.distance_from_antenna) - \
-                                      27.55
-                                device.target = device.emitted_power + \
-                                                UE_GAIN + ANTENNA_GAIN - fsl
-                                print "------ new device ------"
-                                print "UE Ep (dBm) : ", device.emitted_power
-                                print "UE fsl (dB) : ", fsl
-                                print "UE target (dBm) : ", device.target
-                                print ""
-                            else:
-                                if device.emitted_power < UE_MAX_EMITTED_POWER:
-                                    device.emitted_power += POWER_CONTROL_STEP
-                                    device.set_command_up()
-                                else:
-                                    device.set_device_disconnected()
-                            j += 1
-                        if not (prev_cmd == device.command and
-                                prev_status == device.status):
-                            self.update_device(device)
-                        i += 1
-        for device in self.ues:
-            with device.mutex:
-                device.open_looped = True
-                if device.status != CONNECTED:
+        device = choice(self.ues)
+        with device.mutex:
+            # If the device has not been open looped yet
+            if not device.open_looped:
+                # Computation of initial emitted_power for the device
+                # Compute RxLev
+                RxLevNodeB = self.antenna.emitted_power + \
+                             UE_GAIN + ANTENNA_GAIN - \
+                             (20 * log10(UMTS_FREQ) + \
+                             20 * (FRIIS_OBSTACLE_CONSTANT+0.1) * \
+                             log10(device.distance_from_antenna) - 27.55)
+                # Compute the new distance covered by UE's signal
+                new_distance = 10**(
+                    (-RxLevNodeB + self.antenna.emitted_power + \
+                    UE_GAIN + ANTENNA_GAIN - 20 * log10(UMTS_FREQ) + 27.55) /
+                    (20*FRIIS_OBSTACLE_CONSTANT)
+                    )
+                # Set the initial UE's Ep
+                initial_ep = ANTENNA_SENSITIVITY - UE_GAIN - ANTENNA_GAIN + \
+                             20 * log10(UMTS_FREQ) + \
+                             20 * FRIIS_OBSTACLE_CONSTANT * \
+                             log10(device.distance_from_antenna) - 27.55
+                if initial_ep <= UE_MAX_EMITTED_POWER:
+                    device.emitted_power = initial_ep
+                else :
+                    device.emitted_power = UE_MAX_EMITTED_POWER
+                # Compute the UE's Ep to reach to be connected
+                emitted_power_to_reach = ANTENNA_SENSITIVITY - UE_GAIN - \
+                                         ANTENNA_GAIN + \
+                                         20 * log10(UMTS_FREQ) + \
+                                         20 * FRIIS_OBSTACLE_CONSTANT * \
+                                         log10(new_distance) - 27.55
+                # Retry MAX_PREAMBLE_CYCLE times before considering the UE
+                # connected or not.
+                i = 0
+                while i < MAX_PREAMBLE_CYCLE:
                     prev_cmd = device.command
                     prev_status = device.status
-                    device.set_device_disconnected()
-                    # Only render if changed.
+                    # Increase PREAMBLE_RETRANS_MAX times
+                    j = 0
+                    while j < PREAMBLE_RETRANS_MAX:
+                        # If the current emitted power isn't sufficient
+                        # then increase it by a step.
+                        if device.emitted_power >= emitted_power_to_reach:
+                            device.set_device_connected()
+                            fsl = 20 * log10(UMTS_FREQ) + \
+                                  20 * FRIIS_OBSTACLE_CONSTANT * \
+                                  log10(device.distance_from_antenna) - \
+                                  27.55
+                            device.target = device.emitted_power + \
+                                            UE_GAIN + ANTENNA_GAIN - fsl
+                            print "------ new device ------"
+                            print "UE Ep (dBm) : ", device.emitted_power
+                            print "UE fsl (dB) : ", fsl
+                            print "UE target (dBm) : ", device.target
+                            print ""
+                        else:
+                            if device.emitted_power < UE_MAX_EMITTED_POWER:
+                                device.emitted_power += POWER_CONTROL_STEP
+                                device.set_command_up()
+                            else:
+                                device.set_device_disconnected()
+                        j += 1
                     if not (prev_cmd == device.command and
                             prev_status == device.status):
                         self.update_device(device)
+                    i += 1
+            device.open_looped = True
+            if device.status != CONNECTED:
+                prev_cmd = device.command
+                prev_status = device.status
+                device.set_device_disconnected()
+                # Only render if changed.
+                if not (prev_cmd == device.command and
+                        prev_status == device.status):
+                    self.update_device(device)
 
     def outer_loop(self):
         """Implementation of the outer loop.
@@ -300,22 +299,22 @@ class Simulator(object):
                 B: Bandwith in Hz
 
         """
-        for device in self.ues:
-            with device.mutex:
-                if device.open_looped:
-                    # Compute C/I.
-                    needed_power = device.emitted_power + UE_GAIN + ANTENNA_GAIN - \
-                                   self.compute_free_space_loss(self.antenna,device)
-                    if needed_power >= ANTENNA_SENSITIVITY:
-                        c_over_i = (10**((
-                            device.emitted_power + UE_GAIN + ANTENNA_GAIN -
-                            self.compute_free_space_loss(self.antenna,device) - 30) /
-                            10)) / self.compute_interference(device)
-                        c_over_i = 10 * log10(c_over_i)
-                        if c_over_i < device.snr:
-                            device.target += TARGET_STEP
-                        else:
-                            device.target -= TARGET_STEP
+        device = choice(self.ues)
+        with device.mutex:
+            if device.open_looped:
+                # Compute C/I.
+                needed_power = device.emitted_power + UE_GAIN + ANTENNA_GAIN - \
+                               self.compute_free_space_loss(self.antenna,device)
+                if needed_power >= ANTENNA_SENSITIVITY:
+                    c_over_i = (10**((
+                        device.emitted_power + UE_GAIN + ANTENNA_GAIN -
+                        self.compute_free_space_loss(self.antenna,device) - 30) /
+                        10)) / self.compute_interference(device)
+                    c_over_i = 10 * log10(c_over_i)
+                    if c_over_i < device.snr:
+                        device.target += TARGET_STEP
+                    else:
+                        device.target -= TARGET_STEP
 
     def inner_loop(self):
         """Implementation of the Inner loop.
@@ -324,29 +323,29 @@ class Simulator(object):
         according to the target from the outer loop.
 
         """
-        for device in self.ues:
-            with device.mutex:
-                if device.open_looped:
-                    if not device.status == NOT_CONNECTED:
-                        # Compute the received power
-                        fsl = 20 * log10(UMTS_FREQ) + 20 * FRIIS_OBSTACLE_CONSTANT * \
-                              log10(device.distance_from_antenna) - 27.55
-                        received_power = device.emitted_power + UE_GAIN + \
-                                         ANTENNA_GAIN - fsl
-                        # If the received power is under the target then send command
-                        # up.
-                        if received_power < device.target:
-                            device.set_command_up()
-                            self.update_device(device)
-                            print "inner loop : command up (RxLev = " + \
-                                  str(received_power) + ", target = " + \
-                                  str(device.target) + ")"
-                        else:
-                            device.set_command_down()
-                            self.update_device(device)
-                            print "inner loop : command down (RxLev = " + \
-                                   str(received_power) + ", target = " + \
-                                   str(device.target) + ")"
+        device = choice(self.ues)
+        with device.mutex:
+            if device.open_looped:
+                if not device.status == NOT_CONNECTED:
+                    # Compute the received power
+                    fsl = 20 * log10(UMTS_FREQ) + 20 * FRIIS_OBSTACLE_CONSTANT * \
+                          log10(device.distance_from_antenna) - 27.55
+                    received_power = device.emitted_power + UE_GAIN + \
+                                     ANTENNA_GAIN - fsl
+                    # If the received power is under the target then send command
+                    # up.
+                    if received_power < device.target:
+                        device.set_command_up()
+                        self.update_device(device)
+                        print "inner loop : command up (RxLev = " + \
+                              str(received_power) + ", target = " + \
+                              str(device.target) + ")"
+                    else:
+                        device.set_command_down()
+                        self.update_device(device)
+                        print "inner loop : command down (RxLev = " + \
+                               str(received_power) + ", target = " + \
+                               str(device.target) + ")"
 
     def compute_interference(self, device):
         """Interference computation for a given device.
