@@ -66,7 +66,8 @@ class Simulator(object):
         # Devices init.
         self.antenna = Antenna((ANTENNA_LOC_WIDTH, ANTENNA_LOC_HEIGHT))
         # Background init.
-        self._bg = pygame.image.load(BACKGROUND_SCALED_IMAGE)
+        self._bg_original = pygame.image.load(BACKGROUND_SCALED_IMAGE)
+        self._bg = copy(self._bg_original)
         self._bg.blit(
             self.antenna.image,
             (self.antenna.x, self.antenna.y))
@@ -77,6 +78,12 @@ class Simulator(object):
         # Clock init
         self._clock = pygame.time.Clock()
         self._running = True
+
+    def reset_display(self):
+        self._bg = copy(self._bg_original)
+        self._bg.blit(
+            self.antenna.image,
+            (self.antenna.x, self.antenna.y))
 
     def on_event(self, event):
         if event.type == pygame.QUIT:
@@ -90,6 +97,7 @@ class Simulator(object):
                 self.ues = []
                 with self.mutex:
                     self.open_looped_ues = []
+                self.reset_display()
                 self._menu.select_menu(self._menu.menu_pointed)
                 try:
                     self.start()
@@ -100,6 +108,10 @@ class Simulator(object):
             elif event.key == pygame.K_SPACE:
                 self.force_unstable(MAX_NEW_DEVICES)
         self.on_render()
+
+    def poll_event(self):
+        for event in pygame.event.get():
+            self.on_event(event)
 
     def on_render(self):
         self._window.blit(self._bg, (0, 0))
@@ -123,8 +135,8 @@ class Simulator(object):
         self.on_render()
         while self._running:
             self._clock.tick(60)
-            for event in pygame.event.get():
-                self.on_event(event)
+            event_thread = Thread(target=self.poll_event)
+            event_thread.start()
         self.on_cleanup()
 
     def start(self):
@@ -141,12 +153,15 @@ class Simulator(object):
             inner_thread.start()
             render_thread.start()
             i += 1
+            if not self._running:
+                break
 
     def close_distribution(self):
         """Create MAX_DEVICES devices close to the antenna on the grid."""
         pygame.display.set_caption("Close distribution")
         self.free_coors = copy(self.circle_coors)
         self.distribution(self.free_coors)
+        self.on_render()
 
     def far_distribution(self):
         """Create MAX_DEVICES devices far from the antenna on the grid."""
