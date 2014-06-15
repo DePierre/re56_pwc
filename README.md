@@ -26,5 +26,5 @@ Example when a close-distributed simulation is run:
 
 # Context
 
-This project has been created for the lecture RE56 - Mobile networks (provided
-by the [UTBM](http://www.utbm.fr/).
+This project has been created for the lecture RE56 - Mobile networks. This
+lecture is provided by the [UTBM](http://www.utbm.fr/).
