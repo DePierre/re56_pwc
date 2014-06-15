@@ -10,8 +10,11 @@ from random import choice
 from threading import Thread
 
 from constants import *
-from device import Antenna, UE
 from menu import Menu
+from device import Antenna, \
+                   UeVoice, \
+                   UePS64, UePS128, UePS384, \
+                   UeHSDPA768, UeHSDPA2000
 
 
 class Simulator(object):
@@ -155,10 +158,22 @@ class Simulator(object):
 
     def distribution(self, free_coors, nb_devices=MAX_DEVICES):
         """Place the devices on the grid."""
+        # Distribution table in %
+        dist = [
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  # 70% CS-12,2
+            1, 1,  # 10% PS-64
+            2,  # 5% PS-128
+            3,  # 5% PS-384
+            4,  # 5% HSDPA-768
+            5,]  # 5% HSDPA-2000
+        possible_ues = [
+            UeVoice,
+            UePS64, UePS128, UePS384,
+            UeHSDPA768, UeHSDPA2000]
         while nb_devices:
             nb_devices -= 1
             # Create the new device
-            new_device = UE((0, 0), self.antenna)
+            new_device = possible_ues[choice(dist)]((0, 0), self.antenna)
             new_device.set_coor_random(free_coors)
             # Set its image.
             new_device.set_device_trying_to_connect()

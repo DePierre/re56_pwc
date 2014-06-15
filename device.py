@@ -51,8 +51,16 @@ class Antenna(Device):
         self.image = pygame.image.load(ANTENNA_IMAGE).convert_alpha()
 
 
-class UE(Device):
-    """User Equipment."""
+class Ue(Device):
+    """User equipment."""
+
+    # Images
+    img_co_up = DEVICE_CONNECTED_UP_IMAGE
+    img_co_down = DEVICE_CONNECTED_DOWN_IMAGE
+    img_try_up = DEVICE_TRY_TO_CONNECT_UP_IMAGE
+    img_try_down = DEVICE_TRY_TO_CONNECT_DOWN_IMAGE
+    img_disco = DEVICE_DISCONNECTED_IMAGE
+    SNR = 100  # Default SNR value for an UE in dB
 
     def __init__(self, (x, y), antenna):
         Device.__init__(self, (x, y))
@@ -60,7 +68,7 @@ class UE(Device):
         self.distance_from_antenna = self.compute_distance(antenna)
         # Set the initial emitted power to the min.
         self.emitted_power = UE_MAX_EMITTED_POWER
-        self.snr = SINR_TARGET[random.choice(DIST)]  # SNR in dB
+        self.snr = self.SNR  # SNR in dB
         self.target = 0.0
         self.command = COMMAND_UP
         self.status = TRY_CONNECT
@@ -105,14 +113,11 @@ class UE(Device):
         """
         self.command = COMMAND_UP
         if self.status == TRY_CONNECT:
-            self.image = pygame.image.load(
-                DEVICE_TRY_TO_CONNECT_UP_IMAGE).convert_alpha()
+            self.image = pygame.image.load(self.img_try_up).convert_alpha()
         elif self.status == CONNECTED:
-            self.image = pygame.image.load(
-                DEVICE_CONNECTED_UP_IMAGE).convert_alpha()
+            self.image = pygame.image.load(self.img_co_up).convert_alpha()
         else :
-            self.image = pygame.image.load(
-                DEVICE_DISCONNECTED_IMAGE).convert_alpha()
+            self.image = pygame.image.load(self.img_disco).convert_alpha()
         if not self.emitted_power + POWER_CONTROL_STEP > UE_MAX_EMITTED_POWER:
             self.emitted_power += POWER_CONTROL_STEP
         elif self.emitted_power < UE_MAX_EMITTED_POWER and self.emitted_power + POWER_CONTROL_STEP > UE_MAX_EMITTED_POWER:
@@ -129,14 +134,11 @@ class UE(Device):
         """
         self.command = COMMAND_DOWN
         if self.status == TRY_CONNECT:
-            self.image = pygame.image.load(
-                DEVICE_TRY_TO_CONNECT_DOWN_IMAGE).convert_alpha()
+            self.image = pygame.image.load(self.img_try_down).convert_alpha()
         elif self.status == CONNECTED:
-            self.image = pygame.image.load(
-                DEVICE_CONNECTED_DOWN_IMAGE).convert_alpha()
+            self.image = pygame.image.load(self.img_co_down).convert_alpha()
         else :
-            self.image = pygame.image.load(
-                DEVICE_DISCONNECTED_IMAGE).convert_alpha()
+            self.image = pygame.image.load(self.img_disco).convert_alpha()
         self.emitted_power -= POWER_CONTROL_STEP
 
     def set_device_connected(self):
@@ -147,11 +149,9 @@ class UE(Device):
         """
         self.status = CONNECTED
         if self.command == COMMAND_UP:
-            self.image = pygame.image.load(
-                DEVICE_CONNECTED_UP_IMAGE).convert_alpha()
+            self.image = pygame.image.load(self.img_co_up).convert_alpha()
         else :
-            self.image = pygame.image.load(
-                DEVICE_CONNECTED_DOWN_IMAGE).convert_alpha()
+            self.image = pygame.image.load(self.img_co_down).convert_alpha()
 
     def set_device_trying_to_connect(self):
         """Set the status of the device to TRY_CONNECT.
@@ -161,11 +161,9 @@ class UE(Device):
         """
         self.status = TRY_CONNECT
         if self.command == COMMAND_UP:
-            self.image = pygame.image.load(
-                DEVICE_TRY_TO_CONNECT_UP_IMAGE).convert_alpha()
+            self.image = pygame.image.load(self.img_try_up).convert_alpha()
         else :
-            self.image = pygame.image.load(
-                DEVICE_TRY_TO_CONNECT_DOWN_IMAGE).convert_alpha()
+            self.image = pygame.image.load(self.img_try_down).convert_alpha()
 
     def set_device_disconnected(self):
         """Set the status of the device to NOT_CONNECTED.
@@ -174,9 +172,7 @@ class UE(Device):
 
         """
         self.status = NOT_CONNECTED
-        self.image = pygame.image.load(
-            DEVICE_DISCONNECTED_IMAGE
-        ).convert_alpha()
+        self.image = pygame.image.load(self.img_disco).convert_alpha()
 
     def reload(self):
         """Reload the current image.
@@ -186,20 +182,85 @@ class UE(Device):
         """
         if self.status == TRY_CONNECT:
             if self.command == COMMAND_UP:
-                self.image = pygame.image.load(
-                    DEVICE_TRY_TO_CONNECT_UP_IMAGE
-                ).convert_alpha()
+                self.image = pygame.image.load(self.img_try_up).convert_alpha()
             else :
-                self.image = pygame.image.load(
-                    DEVICE_TRY_TO_CONNECT_DOWN_IMAGE
-                ).convert_alpha()
+                self.image = pygame.image.load(self.img_try_down).convert_alpha()
         elif self.status == CONNECTED:
             if self.command == COMMAND_UP:
-                self.image = pygame.image.load(
-                    DEVICE_CONNECTED_UP_IMAGE).convert_alpha()
+                self.image = pygame.image.load(self.img_co_up).convert_alpha()
             else :
-                self.image = pygame.image.load(
-                    DEVICE_CONNECTED_DOWN_IMAGE).convert_alpha()
+                self.image = pygame.image.load(self.img_co_down).convert_alpha()
         else :
-            self.image = pygame.image.load(
-                DEVICE_DISCONNECTED_IMAGE).convert_alpha()
+            self.image = pygame.image.load(self.img_disco).convert_alpha()
+
+
+class UeVoice(Ue):
+    """User Equipment simulating a voice call."""
+
+    # Images
+    img_co_up = VOICE_CONNECTED_UP_IMAGE
+    img_co_down = VOICE_CONNECTED_DOWN_IMAGE
+    img_try_up = VOICE_TRY_TO_CONNECT_UP_IMAGE
+    img_try_down = VOICE_TRY_TO_CONNECT_DOWN_IMAGE
+    img_disco = VOICE_DISCONNECTED_IMAGE
+    SNR = VOICE_SNR_TARGET
+
+
+class UePS64(Ue):
+    """User Equipment simulating a PS-64."""
+
+    # Images
+    img_co_up = A3GLT_CONNECTED_UP_IMAGE
+    img_co_down = A3GLT_CONNECTED_DOWN_IMAGE
+    img_try_up = A3GLT_TRY_TO_CONNECT_UP_IMAGE
+    img_try_down = A3GLT_TRY_TO_CONNECT_DOWN_IMAGE
+    img_disco = A3GLT_DISCONNECTED_IMAGE
+    SNR = A3GLT_SNR_TARGET
+
+
+class UePS128(Ue):
+    """User Equipment simulating a PS-128."""
+
+    # Images
+    img_co_up = A3GMT_CONNECTED_UP_IMAGE
+    img_co_down = A3GMT_CONNECTED_DOWN_IMAGE
+    img_try_up = A3GMT_TRY_TO_CONNECT_UP_IMAGE
+    img_try_down = A3GMT_TRY_TO_CONNECT_DOWN_IMAGE
+    img_disco = A3GMT_DISCONNECTED_IMAGE
+    SNR = A3GMT_SNR_TARGET
+
+
+class UePS384(Ue):
+    """User Equipment simulating a PS-384."""
+
+    # Images
+    img_co_up = A3GLT_CONNECTED_UP_IMAGE
+    img_co_down = A3GLT_CONNECTED_DOWN_IMAGE
+    img_try_up = A3GLT_TRY_TO_CONNECT_UP_IMAGE
+    img_try_down = A3GLT_TRY_TO_CONNECT_DOWN_IMAGE
+    img_disco = A3GLT_DISCONNECTED_IMAGE
+    SNR = A3GHT_SNR_TARGET
+
+
+class UeHSDPA768(Ue):
+    """User Equipment simulating a HSDPA-768."""
+
+    # Images
+    img_co_up = HLT_CONNECTED_UP_IMAGE
+    img_co_down = HLT_CONNECTED_DOWN_IMAGE
+    img_try_up = HLT_TRY_TO_CONNECT_UP_IMAGE
+    img_try_down = HLT_TRY_TO_CONNECT_DOWN_IMAGE
+    img_disco = HLT_DISCONNECTED_IMAGE
+    SNR = HLT_SNR_TARGET
+
+
+class UeHSDPA2000(Ue):
+    """User Equipment simulating a HSDPA-2000."""
+
+    # Images
+    img_co_up = HHT_CONNECTED_UP_IMAGE
+    img_co_down = HHT_CONNECTED_DOWN_IMAGE
+    img_try_up = HHT_TRY_TO_CONNECT_UP_IMAGE
+    img_try_down = HHT_TRY_TO_CONNECT_DOWN_IMAGE
+    img_disco = HHT_DISCONNECTED_IMAGE
+    SNR = HHT_SNR_TARGET
