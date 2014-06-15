@@ -1,4 +1,22 @@
 # -*-coding:utf-8 -*
+"""
+
+    device.py
+
+    Declare the classes representing a device in a mobile network.
+
+    Device: the abstract class for all other devices.
+        Antenna: the class corresponding to the UMTS antenna.
+        Ue: the mother class of an user equipment.
+            UeCall: the Ue sub-class simulating a voice call (i.e low thoughput
+                    needed).
+            UePS64: the Ue sub-class simulating a small 3G data exchange.
+            UePS128: the Ue sub-class simulating a medium 3G data exchange.
+            UePS384: the Ue sub-class simulating a high 3G data exchange.
+            UeHSDPA768: the Ue sub-class simulating a 3G+ medium data exchange.
+            UeHSDPA2000: the Ue sub-class simulating a 3G+ high data exchange.
+
+"""
 
 
 import pygame
@@ -12,24 +30,19 @@ from constants import *
 
 
 class Device(object):
+    """Abstract class representing a device on the mobile network."""
+
     def __init__(self, (x, y)):
-        self.mutex = Lock()
+        self.mutex = Lock()  # Mutex needed when running threaded loops.
         self.x = x
         self.y = y
         self.distance_from_antenna = 0.0
         self.emitted_power = 0.0
-        self.open_looped = False
+        self.open_looped = False  # Does the device finished its open loop?
         self.snr = 0
         self.command = COMMAND_UP
         self.status = NOT_CONNECTED
-        # Object which will contain the image descriptor assigned to the
-        # device.
-        self.image = None
-
-    def set_image(self, imagepath):
-        """To be used to assign the antenna image
-        """
-        self.image = pygame.image.load(imagepath).convert_alpha()
+        self.image = None  # Image representing the device.
 
     def compute_distance(self, neighboor):
         """Distance between two devices.
@@ -43,7 +56,7 @@ class Device(object):
 
 
 class Antenna(Device):
-    """Antenna."""
+    """Class representing an Antenna with its characteristics."""
 
     def __init__(self, (x, y)):
         Device.__init__(self, (x, y))
@@ -52,7 +65,7 @@ class Antenna(Device):
 
 
 class Ue(Device):
-    """User equipment."""
+    """Class representing an User equipment."""
 
     # Images
     img_co_up = DEVICE_CONNECTED_UP_IMAGE
@@ -66,29 +79,12 @@ class Ue(Device):
         Device.__init__(self, (x, y))
         self.antenna = antenna
         self.distance_from_antenna = self.compute_distance(antenna)
-        # Set the initial emitted power to the min.
         self.emitted_power = UE_MAX_EMITTED_POWER
         self.snr = self.SNR  # SNR in dB
         self.target = 0.0
         self.command = COMMAND_UP
         self.status = TRY_CONNECT
         self.reload()
-
-    def compute_distance_from_antenna(self):
-        """Compute the distance between the mobile device and the antenna
-        using coordinates of the UE and the antenna as it is defined in
-        constants.py.
-
-        match between pixels and meters is defined by PIX_IN_METERS in
-        constants.py.
-
-        Any distance computation is down considering only the left bottom
-        corner of both device and antenna which corresponds to the direct
-        coordinate of them.
-        """
-        distance_x = abs(self.antenna.x - self.x) * PIX_IN_METERS
-        distance_y = abs(self.antenna.y - self.y) * PIX_IN_METERS
-        return sqrt(pow(distance_x,2) + pow(distance_y,2))
 
     def set_coor_random(self, free_coors=[]):
         """Randomly set the coordinates of the UE.
@@ -101,7 +97,7 @@ class Ue(Device):
             return
         index = random.randint(0, len(free_coors) - 1)
         self.x, self.y = free_coors[index]
-        del free_coors[index]
+        del free_coors[index]  # The cell is not free anymore.
         self.distance_from_antenna = self.compute_distance(self.antenna)
 
     def set_command_up(self):
@@ -120,7 +116,8 @@ class Ue(Device):
             self.image = pygame.image.load(self.img_disco).convert_alpha()
         if not self.emitted_power + POWER_CONTROL_STEP > UE_MAX_EMITTED_POWER:
             self.emitted_power += POWER_CONTROL_STEP
-        elif self.emitted_power < UE_MAX_EMITTED_POWER and self.emitted_power + POWER_CONTROL_STEP > UE_MAX_EMITTED_POWER:
+        elif (self.emitted_power < UE_MAX_EMITTED_POWER and
+                self.emitted_power + POWER_CONTROL_STEP > UE_MAX_EMITTED_POWER):
             self.emitted_power = UE_MAX_EMITTED_POWER
         else:
             self.set_device_disconnected()

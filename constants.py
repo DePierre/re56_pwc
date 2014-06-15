@@ -1,3 +1,13 @@
+"""
+
+    constants.py
+
+    Define the constants that will be used in the rest of the project.
+    The images, the initial values, etc.
+
+"""
+
+
 COMMAND_UP = 1
 COMMAND_DOWN = 0
 
@@ -16,13 +26,13 @@ BACKGROUND_SCALED_IMAGE = PICTURE_PATH + "background_scale.png"
 CELL_IMAGE = PICTURE_PATH + "empty_cell.png"
 RIGHT_PANEL_IMAGE = PICTURE_PATH + "right_pane.png"
 ANTENNA_IMAGE = PICTURE_PATH + "antenna2.png"
-MENU_SELECTION1_IMAGE = PICTURE_PATH + "menu_selection_1.png"
-MENU_SELECTION2_IMAGE = PICTURE_PATH + "menu_selection_2.png"
-MENU_SELECTION3_IMAGE = PICTURE_PATH + "menu_selection_3.png"
-MENU_SELECTION1_SELECTED_IMAGE = PICTURE_PATH + "menu_selection_1_selected.png"
-MENU_SELECTION2_SELECTED_IMAGE = PICTURE_PATH + "menu_selection_2_selected.png"
-MENU_SELECTION3_SELECTED_IMAGE = PICTURE_PATH + "menu_selection_3_selected.png"
-ARROW_SELECTOR_IMAGE = PICTURE_PATH + "arrow_selector.png"
+MENU_CLOSE1_IMAGE = PICTURE_PATH + "menu_selection_1.png"
+MENU_FAR2_IMAGE = PICTURE_PATH + "menu_selection_2.png"
+MENU_RANDOM3_IMAGE = PICTURE_PATH + "menu_selection_3.png"
+MENU_CLOSE1_SELECTED_IMAGE = PICTURE_PATH + "menu_selection_1_selected.png"
+MENU_FAR2_SELECTED_IMAGE = PICTURE_PATH + "menu_selection_2_selected.png"
+MENU_RANDOM3_SELECTED_IMAGE = PICTURE_PATH + "menu_selection_3_selected.png"
+ARROW_IMAGE = PICTURE_PATH + "arrow_selector.png"
 # Default device
 DEVICE_CONNECTED_UP_IMAGE = PICTURE_PATH + "connected_up.png"
 DEVICE_CONNECTED_DOWN_IMAGE = PICTURE_PATH + "connected_down.png"
@@ -140,9 +150,9 @@ MENU_ITEM_HEIGHT = 50
 MENU_ITEM_WIDTH = 150
 
 # Menu items positions inside right panel
-MENU_ITEM_OFFSET_FROM_LEFT_RIGHT_PANEL_SIDE = 50
-MENU_OFFSET_FROM_TOP_RIGHT_PANEL = 570
+MENU_ITEM_OFFSET = 50
+MENU_OFFSET = 570
 
 # Offset of the arrow_selector from menu item (width, height).
-ARROW_SELECTOR_WIDTH_OFFSET_FROM_MENU_ITEM = 150  # Pixels.
-ARROW_SELECTOR_HEIGHT_OFFSET_FROM_MENU_ITEM = 15  # Pixels.
+ARROW_WIDTH_OFFSET = 150  # Pixels.
+ARROW_HEIGHT_OFFSET = 15  # Pixels.

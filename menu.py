@@ -1,4 +1,14 @@
 # -*-coding:utf-8 -*-
+"""
+
+    menu.py
+
+    Define the different element composing the menu of the GUI.
+
+    MenuItem: an item of the menu (i.e. an image and a label).
+    Menu: the complete menu of the GUI (i.e. the legend, the images, etc.)
+
+"""
 
 
 import pygame
@@ -7,88 +17,46 @@ from pygame.locals import *
 from constants import *
 
 
-class Menu_Item(object):
-    # Default coord of the menu_item 1.
-    x = MENU_ITEM_OFFSET_FROM_LEFT_RIGHT_PANEL_SIDE
-    y = MENU_OFFSET_FROM_TOP_RIGHT_PANEL
-    # This object will contain the image corresponding to a menu item not
-    # selected.
-    image = 0
-    image_path_unsel  = ""
-    image_path_sel = ""
-    is_selected = False
+class MenuItem(object):
+    """Describe an item of the GUI menu."""
 
-    def __init__(self,
-                 (width, height),
-                 image_path_unselected,
-                 image_path_selected):
-        self.x = width
-        self.y = height
-        self.image_path_unsel = image_path_unselected
-        self.image_path_sel = image_path_selected
-        self.image = pygame.image.load(
-            image_path_unselected)
+    def __init__(self, id, im_path_unselected, im_path_selected):
+        self.x = MENU_ITEM_OFFSET
+        self.y = MENU_OFFSET + id * MENU_ITEM_HEIGHT
+        self.image_path_unsel = im_path_unselected
+        self.image_path_sel = im_path_selected
+        self.image = pygame.image.load(im_path_unselected)
+        self.is_selected = False
 
     def select(self):
-        """Set the right image to the menu item."""
+        """Update the image and the status of the item to selected."""
         self.image.fill((0,0,0))
         self.image = pygame.image.load(self.image_path_sel)
         self.is_selected = True
 
     def unselect(self):
+        """Update the image and the status of the item to unselected."""
         self.image.fill((0,0,0))
-        self.image = pygame.image.load(
-            self.image_path_unsel)
+        self.image = pygame.image.load(self.image_path_unsel)
         self.is_selected = False
-
-    def change_image_selected(self, image_path):
-        """Change images assigned to this item."""
-        self.image.fill((0,0,0))
-        self.image_path_sel = image_path
-
-    def change_image_unselected(self, image_path):
-        self.image.fill((0,0,0))
-        self.image_path_unsel = image_path
-
-    def reload_image(self):
-        self.image.fill((0,0,0))
-        if self.is_selected:
-            self.image = pygame.image.load(image_path_sel)
-        else :
-            self.image = pygame.image.load(image_path_unsel)
 
 
 class Menu(object):
-    items = [
-        Menu_Item(
-            (
-                MENU_ITEM_OFFSET_FROM_LEFT_RIGHT_PANEL_SIDE,
-                MENU_OFFSET_FROM_TOP_RIGHT_PANEL
-            ),
-            MENU_SELECTION1_IMAGE,
-            MENU_SELECTION1_SELECTED_IMAGE),
-        Menu_Item(
-            (
-                MENU_ITEM_OFFSET_FROM_LEFT_RIGHT_PANEL_SIDE,
-                MENU_OFFSET_FROM_TOP_RIGHT_PANEL + MENU_ITEM_HEIGHT
-            ),
-            MENU_SELECTION2_IMAGE,
-            MENU_SELECTION2_SELECTED_IMAGE),
-        Menu_Item(
-            (
-                MENU_ITEM_OFFSET_FROM_LEFT_RIGHT_PANEL_SIDE,
-                MENU_OFFSET_FROM_TOP_RIGHT_PANEL + 2 * MENU_ITEM_HEIGHT
-            ),
-            MENU_SELECTION3_IMAGE,
-            MENU_SELECTION3_SELECTED_IMAGE)]
-    arrow_selector = pygame.image.load(ARROW_SELECTOR_IMAGE)
-    surface = pygame.image.load(RIGHT_PANEL_IMAGE)
-    menu_pointed = MENU3_INDEX
+    """Describe the complete menu of the GUI."""
 
     def __init__(self, simulator):
         self.simu = simulator
         self.init = False
-         # Display some text
+        # Create the menu items.
+        self.items = [
+            MenuItem(0, MENU_CLOSE1_IMAGE, MENU_CLOSE1_SELECTED_IMAGE),
+            MenuItem(1, MENU_FAR2_IMAGE, MENU_FAR2_SELECTED_IMAGE),
+            MenuItem(2, MENU_RANDOM3_IMAGE, MENU_RANDOM3_SELECTED_IMAGE)]
+        self.selected = MENU3_INDEX
+        self.arrow_selector = pygame.image.load(ARROW_IMAGE)
+        # Create the image legend.
+        self.surface = pygame.image.load(RIGHT_PANEL_IMAGE)
+        # Create the text legend.
         font = pygame.font.Font(None, 18)
         self.resolution = font.render(
             "1 Squarre : " + str(CELL_RES) + "x" + str(CELL_RES) + " meters",
@@ -99,10 +67,10 @@ class Menu(object):
             "Press 'a' to add " + str(MAX_NEW_DEVICES) + ' new devices.',
             1,
             (255, 255, 255))
-        self.select_menu(MENU3_INDEX)
+        self.select_menu(self.selected)
 
     def select_menu(self, index):
-        """Place the arrow selector beside the menu item indexed 'index'."""
+        """Place the arrow selector beside the selected item."""
         for item in self.items:
             if item.is_selected:
                 item.unselect()
@@ -113,12 +81,11 @@ class Menu(object):
         self.refresh()
 
     def force_distribution(self, index):
-        """Regenerate the mobile distribution according to the selected
-        scenario.
+        """Regenerate the distribution according to the selected scenario.
 
-        index = 1: Close distribution
-        index = 2: Far distribution
-        index = 3: Random distribution
+        index = 1: Close distribution.
+        index = 2: Far distribution.
+        index = 3: Random distribution.
 
         """
         if index == MENU1_INDEX:
@@ -130,8 +97,11 @@ class Menu(object):
 
     def refresh(self):
         """Reload each image of menu."""
+        # Reset.
         self.surface.fill((0,0,0))
+        # Image legend.
         self.surface = pygame.image.load(RIGHT_PANEL_IMAGE)
+        # Text legend.
         self.surface.blit(self.resolution, (300, 700))
         self.surface.blit(self.legend_add, (40, 300))
         # Load each image to the surface.
@@ -140,28 +110,19 @@ class Menu(object):
         # Load image of arrow selector beside the menu item selected.
         self.surface.blit(
             self.arrow_selector, (
-                self.items[self.menu_pointed].x +
-                ARROW_SELECTOR_WIDTH_OFFSET_FROM_MENU_ITEM,
-                self.items[self.menu_pointed].y +
-                ARROW_SELECTOR_HEIGHT_OFFSET_FROM_MENU_ITEM
-            ))
-
-    def get_index_menu_selected(self):
-        """Get index of the menu selected."""
-        for index, item in enumerate(self.items):
-            if item.is_selected :
-                return index
+            self.items[self.selected].x + ARROW_WIDTH_OFFSET,
+            self.items[self.selected].y + ARROW_HEIGHT_OFFSET))
 
     def menu_next(self):
         """Select the next menu item in the list."""
-        self.menu_pointed += 1
-        if self.menu_pointed >= len(self.items):
-            self.menu_pointed = 0
+        self.selected += 1
+        if self.selected >= len(self.items):
+            self.selected = 0
         self.refresh()
 
     def menu_previous(self):
         """Select the previous menu item in the list."""
-        self.menu_pointed -= 1
-        if self.menu_pointed < 0:
-            self.menu_pointed = len(self.items) - 1
+        self.selected -= 1
+        if self.selected < 0:
+            self.selected = len(self.items) - 1
         self.refresh()
