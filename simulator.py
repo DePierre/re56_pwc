@@ -144,14 +144,14 @@ class Simulator(object):
         i = 0
         while True:
             print " ---- loop " + str(i) + " ----"
-            open_thread = Thread(target=self.open_loop)
-            outer_thread = Thread(target=self.outer_loop)
-            inner_thread = Thread(target=self.inner_loop)
-            render_thread = Thread(target=self.on_render)
-            open_thread.start()
-            outer_thread.start()
-            inner_thread.start()
-            render_thread.start()
+            thread_open = Thread(target=self.open_loop)
+            thread_inner = Thread(target=self.outer_loop)
+            thread_outer = Thread(target=self.inner_loop)
+            thread_render = Thread(target=self.on_render)
+            thread_open.start()
+            thread_outer.start()
+            thread_inner.start()
+            thread_render.start()
             i += 1
             if not self._running:
                 break
