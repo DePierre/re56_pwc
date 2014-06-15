@@ -1,3 +1,1 @@
-- start :
-    implement thread for the three loops
-    
+Allow the user to add new devices.
