@@ -101,7 +101,7 @@ class Simulator(object):
                 self._menu.select_menu(self._menu.menu_pointed)
             elif event.key == pygame.K_ESCAPE:
                 self._running = False
-            elif event.key == pygame.K_SPACE:
+            elif event.key == pygame.K_a:
                 self.force_unstable(MAX_NEW_DEVICES)
 
     def on_render(self):
@@ -409,5 +409,3 @@ class Simulator(object):
         # TODO : before any treatment, pause the three loops thread
         pygame.display.set_caption("Force unstable simulation")
         self.distribution(self.free_coors, nb_devices=nb_new_devices)
-        self.open_loop()
-        self.outer_loop()

@@ -94,6 +94,11 @@ class Menu(object):
             "1 Squarre : " + str(CELL_RES) + "x" + str(CELL_RES) + " meters",
             1,
             (255, 255, 255))
+        font = pygame.font.Font(None, 24)
+        self.legend_add = font.render(
+            "Press 'a' to add " + str(MAX_NEW_DEVICES) + ' new devices.',
+            1,
+            (255, 255, 255))
         self.select_menu(MENU3_INDEX)
 
     def select_menu(self, index):
@@ -128,6 +133,7 @@ class Menu(object):
         self.surface.fill((0,0,0))
         self.surface = pygame.image.load(RIGHT_PANEL_IMAGE)
         self.surface.blit(self.resolution, (300, 700))
+        self.surface.blit(self.legend_add, (40, 300))
         # Load each image to the surface.
         for item in self.items:
             self.surface.blit(item.image, (item.x, item.y))
