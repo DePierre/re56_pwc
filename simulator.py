@@ -6,8 +6,8 @@ from pygame.locals import *
 
 from copy import copy
 from math import log10, sqrt
-from random import choice
-from threading import Thread
+from random import choice, randint
+from threading import Thread, Lock
 
 from constants import *
 from menu import Menu
@@ -26,6 +26,8 @@ class Simulator(object):
         self._menu = None
         self._clock = None
         self.ues = []
+        self.open_looped_ues = []
+        self.mutex = Lock()
         self.weight = MAIN_WINDOW_WIDTH
         self.height = MAIN_WINDOW_HEIGHT
         self.size = (self.weight, self.height)
@@ -86,6 +88,8 @@ class Simulator(object):
                 self._menu.menu_previous()
             elif event.key == pygame.K_KP_ENTER or event.key == pygame.K_RETURN:
                 self.ues = []
+                with self.mutex:
+                    self.open_looped_ues = []
                 self._menu.select_menu(self._menu.menu_pointed)
                 try:
                     self.start()
@@ -180,6 +184,8 @@ class Simulator(object):
             self.update_device(new_device)
             # Add the new device to the list of devices
             self.ues.append(new_device)
+            with self.mutex:
+                self.open_looped_ues.append(new_device)
             if not len(free_coors):  # No more free cells.
                 break
 
@@ -216,8 +222,13 @@ class Simulator(object):
             part between parenthesis.
 
         """
-        # Iterates over the devices (but not the antenna)
-        device = choice(self.ues)
+        with self.mutex:
+            if not len(self.open_looped_ues):
+                return
+            # Iterates over the devices (but not the antenna)
+            index = randint(0, len(self.open_looped_ues) - 1)
+            device = self.open_looped_ues[index]
+            del self.open_looped_ues[index]
         with device.mutex:
             # If the device has not been open looped yet
             if not device.open_looped:
