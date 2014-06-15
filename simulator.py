@@ -7,7 +7,7 @@ from pygame.locals import *
 from copy import copy
 from math import log10, sqrt
 from random import choice, randint
-from threading import Thread, Lock
+from threading import Lock
 
 from constants import *
 from menu import Menu
@@ -99,19 +99,10 @@ class Simulator(object):
                     self.open_looped_ues = []
                 self.reset_display()
                 self._menu.select_menu(self._menu.menu_pointed)
-                try:
-                    self.start()
-                except KeyboardInterrupt:
-                    self._running = False
             elif event.key == pygame.K_ESCAPE:
                 self._running = False
             elif event.key == pygame.K_SPACE:
                 self.force_unstable(MAX_NEW_DEVICES)
-        self.on_render()
-
-    def poll_event(self):
-        for event in pygame.event.get():
-            self.on_event(event)
 
     def on_render(self):
         self._window.blit(self._bg, (0, 0))
@@ -135,26 +126,15 @@ class Simulator(object):
         self.on_render()
         while self._running:
             self._clock.tick(60)
-            event_thread = Thread(target=self.poll_event)
-            event_thread.start()
+            for event in pygame.event.get():
+                self.on_event(event)
+            self.open_loop()
+            self.outer_loop()
+            self.inner_loop()
+            for device in self.ues:
+                self.update_device(device)
+            self.on_render()
         self.on_cleanup()
-
-    def start(self):
-        """Start the simulation according to the distribution scenario."""
-        i = 0
-        while True:
-            print " ---- loop " + str(i) + " ----"
-            thread_open = Thread(target=self.open_loop)
-            thread_inner = Thread(target=self.outer_loop)
-            thread_outer = Thread(target=self.inner_loop)
-            thread_render = Thread(target=self.on_render)
-            thread_open.start()
-            thread_outer.start()
-            thread_inner.start()
-            thread_render.start()
-            i += 1
-            if not self._running:
-                break
 
     def close_distribution(self):
         """Create MAX_DEVICES devices close to the antenna on the grid."""
@@ -196,7 +176,6 @@ class Simulator(object):
             new_device.set_coor_random(free_coors)
             # Set its image.
             new_device.set_device_trying_to_connect()
-            self.update_device(new_device)
             # Add the new device to the list of devices
             self.ues.append(new_device)
             with self.mutex:
@@ -279,8 +258,6 @@ class Simulator(object):
                 # connected or not.
                 i = 0
                 while i < MAX_PREAMBLE_CYCLE:
-                    prev_cmd = device.command
-                    prev_status = device.status
                     # Increase PREAMBLE_RETRANS_MAX times
                     j = 0
                     while j < PREAMBLE_RETRANS_MAX:
@@ -306,19 +283,10 @@ class Simulator(object):
                             else:
                                 device.set_device_disconnected()
                         j += 1
-                    if not (prev_cmd == device.command and
-                            prev_status == device.status):
-                        self.update_device(device)
                     i += 1
             device.open_looped = True
             if device.status != CONNECTED:
-                prev_cmd = device.command
-                prev_status = device.status
                 device.set_device_disconnected()
-                # Only render if changed.
-                if not (prev_cmd == device.command and
-                        prev_status == device.status):
-                    self.update_device(device)
 
     def outer_loop(self):
         """Implementation of the outer loop.
@@ -340,6 +308,8 @@ class Simulator(object):
                 B: Bandwith in Hz
 
         """
+        if not self.ues:
+            return
         device = choice(self.ues)
         with device.mutex:
             if device.open_looped:
@@ -364,6 +334,8 @@ class Simulator(object):
         according to the target from the outer loop.
 
         """
+        if not self.ues:
+            return
         device = choice(self.ues)
         with device.mutex:
             if device.open_looped:
@@ -377,13 +349,11 @@ class Simulator(object):
                     # up.
                     if received_power < device.target:
                         device.set_command_up()
-                        self.update_device(device)
                         print "inner loop : command up (RxLev = " + \
                               str(received_power) + ", target = " + \
                               str(device.target) + ")"
                     else:
                         device.set_command_down()
-                        self.update_device(device)
                         print "inner loop : command down (RxLev = " + \
                                str(received_power) + ", target = " + \
                                str(device.target) + ")"
