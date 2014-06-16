@@ -271,7 +271,7 @@ class Simulator(object):
             RxLevNodeB = self.antenna.emitted_power + \
                          UE_GAIN + ANTENNA_GAIN - \
                          (20 * log10(UMTS_FREQ) + \
-                         20 * (FRIIS_OBSTACLE_CONSTANT+0.1) * \
+                         20 * (FRIIS_OBSTACLE_CONSTANT + 0.1) * \
                          log10(device.distance_from_antenna) - 27.55)
             # Compute the new distance covered by UE's signal
             new_distance = 10**(
