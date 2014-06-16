@@ -114,13 +114,14 @@ class Ue(Device):
             self.image = pygame.image.load(self.img_co_up).convert_alpha()
         else :
             self.image = pygame.image.load(self.img_disco).convert_alpha()
-        if not self.emitted_power + POWER_CONTROL_STEP > UE_MAX_EMITTED_POWER:
-            self.emitted_power += POWER_CONTROL_STEP
-        elif (self.emitted_power < UE_MAX_EMITTED_POWER and
-                self.emitted_power + POWER_CONTROL_STEP > UE_MAX_EMITTED_POWER):
-            self.emitted_power = UE_MAX_EMITTED_POWER
+        if self.emitted_power < UE_MAX_EMITTED_POWER:
+            if not self.emitted_power + POWER_CONTROL_STEP > UE_MAX_EMITTED_POWER:
+                self.emitted_power += POWER_CONTROL_STEP
+            else:
+                self.emitted_power = UE_MAX_EMITTED_POWER
         else:
             self.set_device_disconnected()
+            print "Device disconnected : can't command up"
 
     def set_command_down(self):
         """Set the command of the device to COMMAND_DOWN.

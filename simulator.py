@@ -317,16 +317,13 @@ class Simulator(object):
                         print "UE target (dBm) : ", device.target
                         print ""
                     else:
-                        if device.emitted_power < UE_MAX_EMITTED_POWER:
-                            device.emitted_power += POWER_CONTROL_STEP
-                            device.set_command_up()
-                        else:
-                            device.set_device_disconnected()
+                        device.set_command_up()
                     j += 1
                 i += 1
             device.open_looped = True
             if device.status != CONNECTED:
                 device.set_device_disconnected()
+                print "Device disconnected : end of open loop"
 
     def outer_loop(self):
         """Implementation of the outer loop.
