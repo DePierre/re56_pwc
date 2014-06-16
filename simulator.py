@@ -311,6 +311,8 @@ class Simulator(object):
                               27.55
                         device.target = device.emitted_power + \
                                         UE_GAIN + ANTENNA_GAIN - fsl
+                        j = PREAMBLE_RETRANS_MAX
+                        i = MAX_PREAMBLE_CYCLE
                         print "------ new device ------"
                         print "UE Ep (dBm) : ", device.emitted_power
                         print "UE fsl (dB) : ", fsl
