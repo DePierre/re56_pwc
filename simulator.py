@@ -354,10 +354,11 @@ class Simulator(object):
             # The outer loop cannot process a non-open-looped-yet device.
             if not device.open_looped:
                 return
-            # Compute C/I.
+            # Compute the RxLev to know if the device is going to interfer.
             needed_power = device.emitted_power + UE_GAIN + ANTENNA_GAIN - \
                            self.compute_free_space_loss(self.antenna,device)
             if needed_power >= ANTENNA_SENSITIVITY:
+                # Compute C/I.
                 snr = (10**((
                     device.emitted_power + UE_GAIN + ANTENNA_GAIN -
                     self.compute_free_space_loss(self.antenna,device) - 30) /
